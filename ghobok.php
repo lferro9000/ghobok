@@ -2,43 +2,28 @@
 
 if (isset($_GET['method'])) {
 
+	include (__DIR__.'/src/php/db.php');
+	include (__DIR__.'/src/php/loadMap.php');
+	include (__DIR__.'/src/php/saveTile.php');
+	global $db;
+	
 	$method = $_GET['method'];
 	
-	if ($method == 'load_map') {
-		$map_id = intval($_GET['map_id']);
-		$db = mysql_connect('localhost','root','') or die('Cannot connect to the DB');
-		mysql_select_db('ghobok',$db) or die('Cannot select the DB');
+	switch ($method) {
+    case 'load_map':
+		loadMap(intval($_GET['map_id']));
+        break;
+    case 'save_tile':
+        saveTile($_GET['tile']);
+        break;
+    case 2:
+        echo "i equals 2";
+        break;
+}
 
-		$query = "SELECT DISTINCT m.material_id, m.texture_image
-					FROM tiles t
-					JOIN materials m ON ( t.material_id = m.material_id ) 
-					WHERE t.map_id = $map_id";
-		$result = mysql_query($query,$db) or die('Debile query:  '.$query);
-		
-		$materials = array();
-		if(mysql_num_rows($result)) {
-			while($material = mysql_fetch_assoc($result)) {
-				$materials[] = $material;
-			}
-		}
-		
-		$query = "SELECT tile_id, steps_south, steps_west, direction, tile_type, material_id FROM tiles WHERE map_id = $map_id";
-		$result = mysql_query($query,$db) or die('Debile query:  '.$query);
-		
-		$tiles = array();
-		if(mysql_num_rows($result)) {
-			while($tile = mysql_fetch_assoc($result)) {
-				$tiles[] = $tile;
-			}
-		}
-		
-		header('Content-type: application/json');
-		echo json_encode(array('materials'=>$materials, 'tiles'=>$tiles));
 
-		@mysql_close($db);
-	
-	}
 		
+	@mysql_close($db);
 } else die('No method selected.');
 
 ?>

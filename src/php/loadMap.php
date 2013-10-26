@@ -17,7 +17,7 @@ function loadMap ($mapID)
 		}
 	}
 	
-	$query = "SELECT tile_id, steps_south, steps_west, direction, tile_type, material_id 
+	$query = "SELECT tile_id, steps_south, steps_west, steps_up, direction, tile_type, material_id 
 				FROM tiles WHERE map_id = $mapID";
 	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
 	
@@ -29,7 +29,7 @@ function loadMap ($mapID)
 	}
 	
 	header('Content-type: application/json');
-	echo json_encode(array('materials'=>$materials, 'tiles'=>$tiles));
+	echo json_encode(array('mapID'=>$mapID, 'materials'=>$materials, 'tiles'=>$tiles));
 }
 		
 ?>

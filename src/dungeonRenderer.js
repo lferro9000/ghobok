@@ -3,8 +3,8 @@ function dungeonRenderer(container) {
 	var $container = $(container);
 	this.WIDTH = window.innerWidth;
 	this.HEIGHT = window.innerHeight;
-	this.VIEW_ANGLE = 60;
 	this.ASPECT = this.WIDTH / this.HEIGHT;
+		
 	this.NEAR = 1;
 	this.FAR = 50000;
 	
@@ -14,11 +14,11 @@ function dungeonRenderer(container) {
 	
 	this.scene = new THREE.Scene();
 	
-	this.camera = new THREE.PerspectiveCamera( this.VIEW_ANGLE, this.ASPECT, this.NEAR, this.FAR );
+	this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, this.ASPECT, this.NEAR, this.FAR );
 	this.camera.position.x = 0;
 	this.camera.position.y = 0;
 	this.camera.position.z = 500;
-	this.camera.rotation.y = -DOUBLE_RIGHT_ANGLE;		
+	this.camera.rotation.y = - DOUBLE_RIGHT_ANGLE;		
 	this.scene.add(this.camera);	
 	
 	THREEx.WindowResize(this.renderer, this.camera);
@@ -34,12 +34,14 @@ function dungeonRenderer(container) {
 		return new THREE.Mesh( this.tileGeometry, material );
 	}
 	
-	this.renderTile = function (tile, material) {
-		var mesh = this.getTileMesh(material);
-		mesh.position.set( tile.positionX, tile.positionY, tile.positionZ);
-		mesh.rotation.x = tile.rotationX;
-		mesh.rotation.y = tile.rotationY;
+	this.renderTile = function (tile) {
+		var mesh = this.getTileMesh(map.materials[tile.materialID]);
+		var meshPosition = new tileMeshPosition(tile);
+		mesh.position.set( meshPosition.positionX, meshPosition.positionY, meshPosition.positionZ);
+		mesh.rotation.x = meshPosition.rotationX;
+		mesh.rotation.y = meshPosition.rotationY;
 		mesh.tile = tile;
+		tile.mesh = mesh;
 		this.scene.add(mesh);
 	}
 	
@@ -62,13 +64,12 @@ function dungeonRenderer(container) {
 			
 		this.partyLight = new THREE.PointLight( 0xf0a0a0, 0.85 );
 		this.partyLight.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
-		this.scene.add(this.partyLight);		
-		
+		this.scene.add(this.partyLight);
 		//this.scene.fog = new THREE.Fog( 0x000000, 1500, 3000 ) ;
 		
-		for (var i=0; i<map.tiles.length; i++)
+		for(tileID in map.tiles) 
 		{ 
-			this.renderTile(map.tiles[i], map.materials[map.tiles[i].materialID] );
+			this.renderTile(map.tiles[tileID]);
 		}
 		
 		this.syncWithPartyPosition(party);

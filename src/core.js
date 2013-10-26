@@ -19,9 +19,9 @@ function startLoadingMap (mapID) {
 	
 function finishLoadingMap(map_json) {
 	map.loadMapFromJSON(map_json);
-	dr.renderDungeon(map, party);
+	dr.renderDungeon();
 	var loader = new THREE.JSONLoader();	
-	loader.load( "src/horse.js", function( geometry ) {
+	loader.load( "models/horse.js", function( geometry ) {
 		dr.addMorph( geometry, 550, 500, -230, -250, 1000);
 	} );
 	
@@ -63,9 +63,9 @@ $( function () {
 	dr = new dungeonRenderer('#container');
 	mouse = new mouseSelect();
 	map = new dungeonMap();
-	party = new adventurersParty(0, 0, DIRECTION_SOUTH);
+	party = new adventurersParty(0, 0, 0, DIRECTION_SOUTH);
 	hud = new ghobokHUD('#hud');
-	editor = new mapEditor(true);
+	editor = new mapEditor();
 
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	document.addEventListener( 'mousedown', onDocumentMouseDown, false );

@@ -1,3 +1,3 @@
-function adventurersParty(stepsSouth, stepsWest, direction) {
-	this.position = new mapPosition(stepsSouth, stepsWest, direction);
+function adventurersParty(stepsSouth, stepsWest, stepsUp, direction) {
+	this.position = new mapPosition(stepsSouth, stepsWest, stepsUp, direction);
 }

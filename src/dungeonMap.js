@@ -1,7 +1,8 @@
 function dungeonMap() {
 	
+	this.mapID = false;
 	this.materials = new Array();
-	this.tiles = [];
+	this.tiles = new Array();
 
 	this.getMaterial = function (material) {
 		var texture = THREE.ImageUtils.loadTexture( "images/" + material.texture_image );
@@ -10,93 +11,42 @@ function dungeonMap() {
 	
 	this.loadMapFromJSON = function (map_json) {
 		
+		this.mapID = map_json.mapID;
+		
 		var material;		
 		for (var i=0; i<map_json.materials.length; i++) { 
 			material = this.getMaterial(map_json.materials[i]);
-			this.materials[map_json.materials[i].material_id] = material ;
+			this.materials[parseInt(map_json.materials[i].material_id)] = material ;
 		}
 		
 		var tile;
 		for (var i=0; i<map_json.tiles.length; i++) { 
 			tile = map_json.tiles[i];
-			this.tiles.push( new dungeonTile(tile.tile_id, tile.steps_south,tile.steps_west,tile.direction,tile.tile_type,tile.material_id) );
+			this.tiles[parseInt(tile.tile_id)] = new dungeonTile(tile.tile_id, tile.steps_south, tile.steps_west, tile.steps_up, tile.direction, tile.tile_type, tile.material_id);
 		}
 	}		
 }
 
-/*
-	stepsSouth - distance from top edge of map
-	stepsWest - distance from left edge of map
-	direction - 0 = north, 1 = east, 2 = south, 3 = west
-	type - 0 = floor, 1 = ceiling, 2 = wall
-	texture - texture identifier
-*/
-function dungeonTile(tileID, stepsSouth, stepsWest, direction, type, materialID) {
+function dungeonTile(tileID, stepsSouth, stepsWest, stepsUp, direction, type, materialID) {
 	
 	this.tileID = parseInt(tileID);
 	this.stepsSouth = parseInt(stepsSouth);
 	this.stepsWest = parseInt(stepsWest);
+	this.stepsUp = parseInt(stepsUp);
 	this.direction = parseInt(direction);
 	this.type = parseInt(type);
 	this.materialID = parseInt(materialID);
 	
-	if (this.type == TILE_TYPE_FLOOR) {
-		this.positionX = stepsWest * TILE_SIZE;
-		this.positionY = - TILE_SIZE_HALF;
-		this.positionZ = (stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;		
-		this.rotationX = - RIGHT_ANGLE;
-		this.rotationY = 0;
-		this.rotationZ = 0;
-	} else if (this.type == TILE_TYPE_CEILING) {
-		this.positionX = stepsWest * TILE_SIZE;
-		this.positionY = TILE_SIZE_HALF;
-		this.positionZ = (stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;		
-		this.rotationX = RIGHT_ANGLE;
-		this.rotationY = 0;
-		this.rotationZ = 0;
-	} else {
-	
-		switch(this.direction) {
-			case DIRECTION_NORTH:
-				this.positionX = stepsWest * TILE_SIZE;
-				this.positionY = 0;
-				this.positionZ = (stepsSouth * TILE_SIZE) - TILE_SIZE;
-				this.rotationX = 0;
-				this.rotationY = DIRECTION_SOUTH_RADS;	
-				this.rotationZ = 0;
-			break;
-			case DIRECTION_EAST:
-				this.positionX = (stepsWest * TILE_SIZE) + TILE_SIZE_HALF;
-				this.positionY = 0;
-				this.positionZ = (stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;
-				this.rotationX = 0;
-				this.rotationY = DIRECTION_EAST_RADS;	
-				this.rotationZ = 0;
-			break;
-			case DIRECTION_SOUTH:
-				this.positionX = stepsWest * TILE_SIZE;
-				this.positionY = 0;
-				this.positionZ = (stepsSouth * TILE_SIZE);
-				this.rotationX = 0;
-				this.rotationY = DIRECTION_NORTH_RADS;
- 				this.rotationZ = 0;
-			break;
-			case DIRECTION_WEST:
-				this.positionX = (stepsWest * TILE_SIZE) - TILE_SIZE_HALF;
-				this.positionY = 0;
-				this.positionZ = (stepsSouth * TILE_SIZE) - TILE_SIZE_HALF
-				this.rotationX = 0;
-				this.rotationY = DIRECTION_WEST_RADS;
-				this.rotationZ = 0;
-			break;	
-		}		
-	}	
+	this.getJSON = function () {
+		return JSON.stringify( {tileID: this.tileID, stepsSouth:this.stepsSouth, stepsWest:this.stepsWest, stepsUp:this.stepsUp, direction:this.direction, tileType:this.type, materialID:this.materialID } )
+	}
 }
 
 
-function mapPosition(stepsSouth, stepsWest, direction) {
+function mapPosition(stepsSouth, stepsWest, stepsUp, direction) {
 	this.stepsSouth = stepsSouth;
 	this.stepsWest = stepsWest;
+	this.stepsUp = stepsUp;
 	this.direction = direction;
 	
 	this.move = function (direction)
@@ -124,11 +74,11 @@ function mapPosition(stepsSouth, stepsWest, direction) {
 	
 	this.backward = function ()
 	{
-		this.move(this.reverseDirection(this.direction));
+		this.move(this.reverseDirection());
 	}
 	
-	this.reverseDirection = function (direction) {
-		switch(direction) {
+	this.reverseDirection = function () {
+		switch(this.direction) {
 			case DIRECTION_NORTH:
 				return DIRECTION_SOUTH;
 				break;

@@ -4,6 +4,7 @@ var dr;
 var party;
 var hud;
 var mouse;
+var editor;
 
 /* CORE FUNCTIONS */
 function animationFrame() {
@@ -25,7 +26,7 @@ function finishLoadingMap(map_json) {
 	} );
 	
 	var loader2 = new THREE.JSONLoader();	
-	loader2.load( "objects/octo_black.js?v=1", function( geometry, materials ) { dr.animated.addModelToScene(geometry, materials) });
+	loader2.load( "models/gator.js?v=2", function( geometry, materials ) { dr.animated.addModelToScene(geometry, materials) });
 	
 	animationFrame();
 }
@@ -43,25 +44,17 @@ function keypress(e) {
 	var key = e.keyCode ? e.keyCode : e.charCode;
 	if (key == 119) {
 		party.position.forward();
-		dr.syncWithPartyPosition(party);
-		hud.refreshHUB(party);
-		return false;
 	} else if (key == 97) {
 		party.position.turn(1);
-		dr.syncWithPartyPosition(party);
-		hud.refreshHUB(party);
-		return false;
-	}  else if (key == 115) {
+	} else if (key == 115) {
 		party.position.backward();
-		dr.syncWithPartyPosition(party);
-		hud.refreshHUB(party);
-		return false;
-	}   else if (key == 100) {
+	} else if (key == 100) {
 		party.position.turn(-1);
-		dr.syncWithPartyPosition(party);
-		hud.refreshHUB(party);
-		return false;
 	}
+	
+	dr.syncWithPartyPosition();
+	hud.refresh();
+	return false;
 }
 		
 /* INIT */	
@@ -72,16 +65,15 @@ $( function () {
 	map = new dungeonMap();
 	party = new adventurersParty(0, 0, DIRECTION_SOUTH);
 	hud = new ghobokHUD('#hud');
-	hud.refreshHUB(party);
+	editor = new mapEditor(true);
 
 	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-		document.addEventListener( 'keypress', keypress, false );
+	document.addEventListener( 'keypress', keypress, false );
 	
 	startLoadingMap(1);	
 			
-	}	
-);
+});
 
 
 

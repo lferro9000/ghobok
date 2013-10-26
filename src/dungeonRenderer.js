@@ -43,7 +43,7 @@ function dungeonRenderer(container) {
 		this.scene.add(mesh);
 	}
 	
-	this.renderDungeon = function (map, party) {
+	this.renderDungeon = function () {
 				
 		var imagePrefix = "images/sky/dawnmountain-";
 		var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
@@ -60,9 +60,10 @@ function dungeonRenderer(container) {
 		skyBox.position.y = 0;
 		this.scene.add( skyBox );
 			
-		this.partyLight = new THREE.PointLight( 0xf0a0a0 );
+		this.partyLight = new THREE.PointLight( 0xf0a0a0, 0.85 );
 		this.partyLight.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
 		this.scene.add(this.partyLight);		
+		
 		//this.scene.fog = new THREE.Fog( 0x000000, 1500, 3000 ) ;
 		
 		for (var i=0; i<map.tiles.length; i++)
@@ -79,7 +80,7 @@ function dungeonRenderer(container) {
 		var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
 		var moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture } );
 		var moon = new THREE.Mesh(sphereGeom, moonMaterial);
-		moon.position.set(550,150,550);
+		moon.position.set(550,750,550);
 		this.scene.add(moon);
 
 		// create custom material from the shader code above
@@ -132,7 +133,7 @@ function dungeonRenderer(container) {
 		this.scene.add( meshAnim );
 	}
 			
-	this.syncWithPartyPosition = function (party) {
+	this.syncWithPartyPosition = function () {
 		this.camera.position.x = (party.position.stepsWest * TILE_SIZE);
 		this.camera.position.y = -150;
 		this.camera.position.z = (party.position.stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;

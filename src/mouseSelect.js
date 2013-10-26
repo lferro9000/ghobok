@@ -24,7 +24,7 @@ function mouseSelect()
 						
 	this.animationFrame = function (camera, scene) {
 
-		if (hud.enableEditorMode) {
+		if (editor.enabled) {
 			var vector = new THREE.Vector3( this.x, this.y, 1 );
 			this.projector.unprojectVector( vector, camera );
 			var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
@@ -80,7 +80,7 @@ function mouseSelect()
 		
 		
 		// if there is one (or more) intersections
-		if ((hud.enableEditorMode) && (this.intersected))
+		if ((editor.enabled) && (this.intersected))
 		{
 			console.log("Hit @ " + toString( this.intersected.point ) );
 			// change the color of the closest face.

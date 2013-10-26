@@ -1,8 +1,8 @@
 function animatedObject() {
 	this.animOffset = 0;
 	this.walking = false;
-	this.duration = 3000;
-	this.keyframes = 11;
+	this.duration = 2000;
+	this.keyframes = 26;
 	this.interpolation = this.duration / this.keyframes;
 	this.lastKeyframe = 0;
 	this.currentKeyframe = 0;
@@ -17,8 +17,8 @@ function animatedObject() {
 			
 		var material = new THREE.MeshFaceMaterial( materials );
 		var android = new THREE.Mesh( geometry, material );
-		android.scale.set(10,10,10);
-		android.position.set (550,-300,1250);
+		android.scale.set(2,2,2);
+		android.position.set (550,-280,1250);
 		android.rotation.y = DIRECTION_SOUTH_RADS;
 		dr.scene.add( android );
 		this.android = android;

@@ -1,8 +1,9 @@
 function mapEditor () {
 	
-	this.editorModeEnabled = false;
+	this.tileEditEnabled = false;
+	this.tileDeleteEnabled = false;
 	this.parameters = null;
-	this.gui = false;
+	this.gui = null;
 	
 	this.reset = function () {
 		this.parameters = null;
@@ -17,16 +18,20 @@ function mapEditor () {
 		this.reset();
 		
 		this.parameters = {
-			editorModeEnabled: this.editorModeEnabled, 
 			addMaterial: function() { editor.addMaterial() },
 			addTiles: function() { editor.addTiles() },
+			eraseTiles: function() { editor.eraseTiles() },
 		};
 		
-		var enableEditorMode = this.gui.add( this.parameters, 'editorModeEnabled' ).name('Editor Mode');
-		enableEditorMode.onChange(function(value) { editor.editorModeEnabled = value; } );
+		this.gui.add( this.parameters, 'addMaterial' ).name('Material manager');
+		this.gui.add( this.parameters, 'addMaterial' ).name('Open shader manager');
+		this.gui.add( this.parameters, 'addMaterial' ).name('Open model manager');
+		this.gui.add( this.parameters, 'addMaterial' ).name('Open object manager');
 		
-		this.gui.add( this.parameters, 'addMaterial' ).name('Add new material');
-		this.gui.add( this.parameters, 'addTiles' ).name("Add tiles");
+		var folder1 = this.gui.addFolder('Tiles');
+		folder1.add( this.parameters, 'addTiles' ).name("Dungeon drawing");
+		folder1.add( this.parameters, 'eraseTiles' ).name("Tile eraser");
+		folder1.open();
 		
 		this.gui.open();
 	}
@@ -46,23 +51,21 @@ function mapEditor () {
 		this.reset();
 				
 		this.parameters = {
-			direction: DIRECTION_NORTH,
-			type: TILE_TYPE_FLOOR,
+			tileTypeStr: "Floor",
 			materialID: 0,
-			addTile: function() { editor.addTile() },
+			insertTile: function() { editor.insertTile() },
 			cancel: function() { editor.mainMenu() },
 		};
 		
-		this.gui.add( this.parameters, 'direction' ).name('Direction');
-		this.gui.add( this.parameters, 'type' ).name('Type');
+		this.gui.add( this.parameters, 'tileTypeStr', [ "Floor", "Ceiling", "Wall" ] ).name('Type');
 		this.gui.add( this.parameters, 'materialID' ).name('Material');
-		this.gui.add( this.parameters, 'addTile' ).name('Save');
+		this.gui.add( this.parameters, 'insertTile' ).name('Save');
 		this.gui.add( this.parameters, 'cancel' ).name('Cancel');
 		this.gui.open();
 	}
 	
-	this.addTile = function () {
-		var tile = new dungeonTile(0, party.position.stepsSouth, party.position.stepsWest, party.position.stepsUp, party.position.reverseDirection(), this.parameters.type, this.parameters.materialID);
+	this.insertTile = function () {
+		var tile = new dungeonTile(0, party.position.stepsSouth, party.position.stepsWest, party.position.stepsUp, party.position.direction, getTileTypeFromString(this.parameters.tileTypeStr), this.parameters.materialID);
 		dr.renderTile(tile);
 		$.post("ghobok.php", { method: "save_tile", mapID:map.mapID, tile_json:tile.getJSON() }, function (data) { editorTileSaved(data) } );
 	}
@@ -90,14 +93,44 @@ function mapEditor () {
 	
 	this.saveTile = function () {
 		dr.renderTile(this.parameters.tile);
-		$.post("ghobok.php", { method: "save_tile", tile_json:this.parameters.tile.getJSON() }, function (data) { editorTileSaved(data) } );
+		$.post("ghobok.php", { method: "save_tile", tile_json:this.parameters.tile.getJSON() }, function (data) { console.log("Tile saved:" + data); } );
 		this.addTile();
+	}
+	
+	this.eraseTiles = function () {
+		this.reset();
+		this.tileDeleteEnabled = true;
+		
+		this.parameters = {
+			cancel: function() { 
+				editor.tileDeleteEnabled = false;
+				editor.mainMenu(); 
+			},
+		};
+		
+		var folder1 = this.gui.addFolder('Erasing tiles');
+		this.gui.add( this.parameters, 'cancel' ).name('Cancel');
+		folder1.open();
+
+		this.gui.open();
+	}
+	
+	this.deleteTile = function(tile) {
+		dr.scene.remove(tile.mesh);
+		$.post("ghobok.php", { method: "delete_tile", tile_id:tile.tileID }, function (data) { console.log("Tile deleted:" + data); } );
 	}
 	
 	this.mainMenu();
 	
 }
 
-function editorTileSaved(data) {
-	console.log("Tile saved. Result:" + data);
+function getTileTypeFromString(str) {
+	switch(str) {
+		case "Floor":
+			return TILE_TYPE_FLOOR;
+		case "Ceiling":
+			return TILE_TYPE_CEILING;
+		case "Wall":
+			return TILE_TYPE_WALL;		
+	}
 }

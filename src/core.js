@@ -67,9 +67,11 @@ $( function () {
 	hud = new ghobokHUD('#hud');
 	editor = new mapEditor();
 
-	document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-	document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 	document.addEventListener( 'keypress', keypress, false );
+	
+	var container = document.getElementById('container');
+	container.addEventListener( 'mousemove', onDocumentMouseMove, false );
+	container.addEventListener( 'mousedown', onDocumentMouseDown, false );
 	
 	startLoadingMap(1);	
 			

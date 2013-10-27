@@ -16,6 +16,10 @@ if (isset($method)) {
 			include (__DIR__.'/src/php/saveTile.php');
 			saveTile($_POST['mapID'], $_POST['tile_json']);
 			break;
+		case 'delete_tile':
+			include (__DIR__.'/src/php/deleteTile.php');
+			deleteTile($_POST['tile_id']);
+			break;
 		default:
 			die('Method '. $method . ' unknown.');
 	}

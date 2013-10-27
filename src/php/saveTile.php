@@ -4,7 +4,6 @@ function saveTile($mapID, $tile_json) {
 	global $db;
 	
 	$tile = json_decode($tile_json);
-    var_dump($tile);
 	
 	$tileID = $tile->tileID;
 	$stepsSouth = $tile->stepsSouth;
@@ -33,7 +32,7 @@ function saveTile($mapID, $tile_json) {
 			$query = "INSERT INTO tiles	(map_id, steps_south, steps_west, steps_up, tile_type, direction, material_id)
 						VALUES ($mapID, $stepsSouth, $stepsWest, $stepsUp, $tileType, $direction, $materialID);";
 			$result = mysql_query($query,$db) or die('Debile query:  '.$query);
-			echo ($result);
+			echo ('Tile saved.');
 		}
 	} else {
 		echo('update');

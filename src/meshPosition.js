@@ -1,13 +1,13 @@
 function tileMeshPosition(tile) {
 
-	if (tile.type == TILE_TYPE_FLOOR) {
+	if (tile.tileType == TILE_TYPE_FLOOR) {
 		this.positionX = tile.stepsWest * TILE_SIZE;
 		this.positionY = - TILE_SIZE_HALF;
 		this.positionZ = (tile.stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;		
 		this.rotationX = - RIGHT_ANGLE;
 		this.rotationY = 0;
 		this.rotationZ = 0;
-	} else if (tile.type == TILE_TYPE_CEILING) {
+	} else if (tile.tileType == TILE_TYPE_CEILING) {
 		this.positionX = tile.stepsWest * TILE_SIZE;
 		this.positionY = TILE_SIZE_HALF;
 		this.positionZ = (tile.stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;		

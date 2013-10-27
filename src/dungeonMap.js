@@ -27,18 +27,18 @@ function dungeonMap() {
 	}		
 }
 
-function dungeonTile(tileID, stepsSouth, stepsWest, stepsUp, direction, type, materialID) {
+function dungeonTile(tileID, stepsSouth, stepsWest, stepsUp, direction, tileType, materialID) {
 	
 	this.tileID = parseInt(tileID);
 	this.stepsSouth = parseInt(stepsSouth);
 	this.stepsWest = parseInt(stepsWest);
 	this.stepsUp = parseInt(stepsUp);
 	this.direction = parseInt(direction);
-	this.type = parseInt(type);
+	this.tileType = parseInt(tileType);
 	this.materialID = parseInt(materialID);
 	
 	this.getJSON = function () {
-		return JSON.stringify( {tileID: this.tileID, stepsSouth:this.stepsSouth, stepsWest:this.stepsWest, stepsUp:this.stepsUp, direction:this.direction, tileType:this.type, materialID:this.materialID } )
+		return JSON.stringify( {tileID: this.tileID, stepsSouth:this.stepsSouth, stepsWest:this.stepsWest, stepsUp:this.stepsUp, direction:this.direction, tileType:this.tileType, materialID:this.materialID } )
 	}
 }
 
@@ -49,8 +49,7 @@ function mapPosition(stepsSouth, stepsWest, stepsUp, direction) {
 	this.stepsUp = stepsUp;
 	this.direction = direction;
 	
-	this.move = function (direction)
-	{
+	this.move = function (direction) {
 		switch(direction) {
 			case DIRECTION_NORTH:
 				this.stepsSouth -= 1;
@@ -67,40 +66,26 @@ function mapPosition(stepsSouth, stepsWest, stepsUp, direction) {
 		}
 	}
 	
-	this.forward = function ()
-	{
+	this.forward = function () {
 		this.move(this.direction);
 	}
 	
-	this.backward = function ()
-	{
-		this.move(this.reverseDirection());
+	this.backward = function () {
+		this.move(directionTurn(this.direction, TURN_BACK));
 	}
 	
-	this.reverseDirection = function () {
-		switch(this.direction) {
-			case DIRECTION_NORTH:
-				return DIRECTION_SOUTH;
-				break;
-			case DIRECTION_WEST:
-				return DIRECTION_EAST;
-				break;
-			case DIRECTION_SOUTH:
-				return DIRECTION_NORTH;
-				break;
-			case DIRECTION_EAST:
-				return DIRECTION_WEST;
-				break;
-		}
+	this.strideLeft = function () {
+		this.move(directionTurn(this.direction, TURN_LEFT));
 	}
 	
-	this.turn =	function (step)
-	{
-		this.direction += step;
-		if (this.direction > DIRECTION_WEST) this.direction = DIRECTION_NORTH;
-		if (this.direction < DIRECTION_NORTH) this.direction = DIRECTION_WEST;
+	this.strideRight = function () {
+		this.move(directionTurn(this.direction, TURN_RIGHT));
 	}
 	
+	this.turn =	function (step)	{
+		this.direction = directionTurn (this.direction, step);
+	}
+		
 	this.getDirectionInRads = function () {
 		switch(this.direction) {
 			case DIRECTION_NORTH:
@@ -118,4 +103,17 @@ function mapPosition(stepsSouth, stepsWest, stepsUp, direction) {
 		}
 	}
 	
+}
+
+function directionTurn (direction, turn_steps) {
+
+	direction = direction + turn_steps;
+	
+	if (direction > DIRECTION_WEST) {
+		direction = direction % 4;
+	} else if (direction < DIRECTION_NORTH) {
+		direction = DIRECTION_WEST + 1 + (direction % -4);
+	}
+	
+	return direction;
 }

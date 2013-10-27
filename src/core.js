@@ -42,18 +42,7 @@ function onDocumentMouseDown( event ) {
 	
 function keypress(e) {
 	var key = e.keyCode ? e.keyCode : e.charCode;
-	if (key == 119) {
-		party.position.forward();
-	} else if (key == 97) {
-		party.position.turn(1);
-	} else if (key == 115) {
-		party.position.backward();
-	} else if (key == 100) {
-		party.position.turn(-1);
-	}
-	
-	dr.syncWithPartyPosition();
-	hud.refresh();
+	processKeyPress(key);
 	return false;
 }
 		

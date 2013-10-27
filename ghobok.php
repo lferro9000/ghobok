@@ -20,6 +20,10 @@ if (isset($method)) {
 			include (__DIR__.'/src/php/deleteTile.php');
 			deleteTile($_POST['tile_id']);
 			break;
+		case 'material_manager':
+			include (__DIR__.'/src/php/materialManager.php');
+			//deleteTile($_POST['tile_id']);
+			break;
 		default:
 			die('Method '. $method . ' unknown.');
 	}

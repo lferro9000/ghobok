@@ -26,6 +26,14 @@ body {
 	padding-left:50px;
 }
 
+#material-manager {
+	position:absolute;
+	top:0px;
+	right:280px;
+	width:800px;
+	height:600px;
+}
+
 .hud-text {
 	color:white;
 }

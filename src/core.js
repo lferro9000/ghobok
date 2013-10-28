@@ -25,6 +25,19 @@ function finishLoadingMap(map_json) {
 		dr.addMorph( geometry, 550, 500, -230, -250, 1000);
 	} );
 	
+	var loader3 = new THREE.JSONLoader();	
+	loader3.load( "models/woman.js?v=5", function( geometry, materials ) {
+		
+		var mesh = new THREE.Mesh( geometry, new THREE.MeshFaceMaterial( materials ));
+
+		mesh.position.set( 500, -250, 500 );
+		mesh.rotation.y = DOUBLE_RIGHT_ANGLE;
+
+		mesh.scale.set( 15, 15, 15 );
+		
+		dr.scene.add( mesh );
+	} );
+	
 	var loader2 = new THREE.JSONLoader();	
 	loader2.load( "models/gator.js?v=2", function( geometry, materials ) { dr.animated.addModelToScene(geometry, materials) });
 	

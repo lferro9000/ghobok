@@ -84,8 +84,6 @@ function dungeonRenderer(container) {
 		moon.position.set(550,750,550);
 		this.scene.add(moon);
 
-		// create custom material from the shader code above
-		//   that is within specially labeled script tags
 		var customMaterial = new THREE.ShaderMaterial( 
 		{
 			uniforms: 

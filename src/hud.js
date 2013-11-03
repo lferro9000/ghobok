@@ -5,6 +5,7 @@ function ghobokHUD(container) {
 
 	this.refresh = function () {
 		var html = "<p class=\"hud-text\">";
+		html += "Up: <b>" + party.position.stepsUp + "</b><br/>";
 		html += "South: <b>" + party.position.stepsSouth + "</b><br/>";
 		html += "West: <b>" + party.position.stepsWest + "</b><br/>";
 		html += "Direction: <b>" + this.getDirectionName(party.position.direction) + "</b><br/>";

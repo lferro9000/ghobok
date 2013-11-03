@@ -23,7 +23,7 @@
 	if (isset($_POST['submitted'])) {
 
 		// upload image, if sent
-		if (isset($_FILES['texture_image'])) {
+		if (file_exists($_FILES['texture_image']["tmp_name"])) {
 			
 			$temp = explode(".", $_FILES["texture_image"]["name"]);
 			$file_name = $temp[0];
@@ -36,8 +36,7 @@
 					$texture_image = $file_name . "_" . $counter . "." . $file_ext;
 					$file_path = TEXTURE_IMAGES_PATH . $texture_image;
 					$counter++;
-			}
-			
+			}			
 				
 			if (!move_uploaded_file($_FILES["texture_image"]["tmp_name"], $file_path)) {
 				$errors[] = "error occured when uploading the texture image file";

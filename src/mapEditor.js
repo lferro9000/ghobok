@@ -5,6 +5,8 @@ function mapEditor () {
 	this.parameters = null;
 	this.gui = null;
 	this.defaultMaterialID = 0;
+	this.defaultCategoryID = 0;
+	this.defaultTileTypeStr = "Floor";
 	this.materialManager = null;
 	
 	this.reset = function () {
@@ -14,6 +16,17 @@ function mapEditor () {
 			this.gui = false;
 		}
 		this.gui = new dat.GUI();
+		
+		this.parameters = {
+			floatUp: function() { party.position.stepsUp += 1; dr.syncWithPartyPosition(); hud.refresh(); },
+			floatDown: function() { party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); }			
+		};
+		
+		var folder0 = this.gui.addFolder('Float');
+		folder0.add( this.parameters, 'floatUp' ).name("Up");
+		folder0.add( this.parameters, 'floatDown' ).name("Down");
+		folder0.open();
+		
 	}
 	
 	this.mainMenu = function () {
@@ -23,6 +36,8 @@ function mapEditor () {
 			materialManager: function() { editor.openMaterialManager() },
 			addTiles: function() { editor.addTiles() },
 			eraseTiles: function() { editor.eraseTiles() },
+			floatUp: function() { party.position.stepsUp += 1; dr.syncWithPartyPosition(); hud.refresh(); },
+			floatDown: function() { party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); }			
 		};
 		
 		this.gui.add( this.parameters, 'materialManager' ).name('Material manager');
@@ -39,7 +54,7 @@ function mapEditor () {
 		this.reset();
 				
 		this.parameters = {
-			tileTypeStr: "Floor",
+			tileTypeStr: this.defaultTileTypeStr,
 			selectMaterial: function() { editor.selectMaterial() },
 			insertTile: function() { editor.insertTile() },
 			cancel: function() { editor.mainMenu() },
@@ -56,6 +71,7 @@ function mapEditor () {
 	}
 	
 	this.insertTile = function () {
+		this.defaultTileTypeStr = this.parameters.tileTypeStr;
 		var tile = new dungeonTile(0, party.position.stepsSouth, party.position.stepsWest, party.position.stepsUp, party.position.direction, getTileTypeFromString(this.parameters.tileTypeStr), this.defaultMaterialID);
 		dr.renderTile(tile);
 		$.post("ghobok.php", { method: "save_tile", mapID:map.mapID, tile_json:tile.getJSON() }, function (data) { console.log("Tile inserted:" + data); } );
@@ -113,10 +129,10 @@ function mapEditor () {
 	
 	this.openMaterialManager = function() {
 		if (!(this.materialManager)) {
-			this.materialManager = $('<iframe id="material-manager" >').attr('src', 'ghobok.php?method=material_manager').appendTo('body');
-			return this.materialManager;
+			this.materialManager = $('<iframe id="material-manager" >').appendTo('body');
+			return this.materialManager.attr('src', 'ghobok.php?method=material_manager&cat_id=' + this.defaultCategoryID);
 		} else {
-			return this.materialManager.toggle();
+			return this.materialManager.toggle();		
 		}
 	}
 	

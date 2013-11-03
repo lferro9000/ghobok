@@ -55,7 +55,7 @@ function dungeonRenderer($container) {
 		skyBox.position.y = 0;
 		this.scene.add( skyBox );
 			
-		this.partyLight = new THREE.PointLight( 0xf0a0a0, 0.85 );
+		this.partyLight = new THREE.PointLight( 0xf0a0a0, 0.45 );
 		this.partyLight.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
 		this.scene.add(this.partyLight);
 		//this.scene.fog = new THREE.Fog( 0x000000, 1500, 3000 ) ;
@@ -65,46 +65,19 @@ function dungeonRenderer($container) {
 			this.renderTile(map.tiles[tileID]);
 		}
 		
-		this.syncWithPartyPosition(party);
+		for(particleID in map.particles) 
+		{ 
+			map.particles[particleID].render(this.scene);
+		}
+		
 		this.createHUDSprites();
-		
-		var sphereGeom = new THREE.SphereGeometry(100, 32, 16);
-    
-		/* moon */
-		var moonTexture = THREE.ImageUtils.loadTexture( 'images/textures/moon.jpg' );
-		var moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture } );
-		var moon = new THREE.Mesh(sphereGeom, moonMaterial);
-		moon.position.set(550,750,550);
-		this.scene.add(moon);
-
-		var customMaterial = new THREE.ShaderMaterial( 
-		{
-			uniforms: 
-			{ 
-				"c":   { type: "f", value: 1.0 },
-				"p":   { type: "f", value: 1.4 },
-				glowColor: { type: "c", value: new THREE.Color(0x00a000) },
-				viewVector: { type: "v3", value: this.camera.position }
-			},
-			vertexShader:   document.getElementById( 'vertexShader'   ).textContent,
-			fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
-			side: THREE.FrontSide,
-			blending: THREE.AdditiveBlending,
-			transparent: true
-		}   );
-		
-		this.moonGlow = new THREE.Mesh( sphereGeom.clone(), customMaterial.clone() );
-		this.moonGlow.position = moon.position;
-		this.moonGlow.scale.multiplyScalar(1.2);
-		this.scene.add( this.moonGlow );
 		
 		this.animated = new animatedObject();
 		
+		this.syncWithPartyPosition(party);
 	}
 	
 	this.addMorph = function ( geometry, speed, duration, x, y, z ) {
-
-		//var material = new THREE.MeshLambertMaterial( { color: 0xa0a0a0, morphTargets: false, vertexColors: THREE.FaceColors } );
 
 		var material2 = map.materials[1];
 		
@@ -127,7 +100,7 @@ function dungeonRenderer($container) {
 			
 	this.syncWithPartyPosition = function () {
 		this.camera.position.x = (party.position.stepsWest * TILE_SIZE);
-		this.camera.position.y = -150;
+		this.camera.position.y = (party.position.stepsUp * TILE_SIZE) - 150;
 		this.camera.position.z = (party.position.stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;
 		this.camera.rotation.y = party.position.getDirectionInRads();
 		this.partyLight.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
@@ -135,6 +108,12 @@ function dungeonRenderer($container) {
 	
 	this.animationFrame = function () {
 		this.animated.animate();
+		
+		for(particleID in map.particles) 
+		{ 
+			map.particles[particleID].animate();
+		}
+		
 		this.renderer.render( this.scene, this.camera );
 	}
 	

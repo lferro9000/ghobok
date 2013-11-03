@@ -3,6 +3,7 @@ function dungeonMap() {
 	this.mapID = false;
 	this.materials = new Array();
 	this.tiles = new Array();
+	this.particles = new Array();
 
 	this.getMaterial = function (material) {
 		var texture = THREE.ImageUtils.loadTexture( "images/textures/" + material.texture_image );
@@ -23,6 +24,12 @@ function dungeonMap() {
 		for (var i=0; i<map_json.tiles.length; i++) { 
 			tile = map_json.tiles[i];
 			this.tiles[parseInt(tile.tile_id)] = new dungeonTile(tile.tile_id, tile.steps_south, tile.steps_west, tile.steps_up, tile.direction, tile.tile_type, tile.material_id);
+		}
+		
+		var particle;
+		for (var i=0; i<map_json.particles.length; i++) { 
+			particle = map_json.particles[i];
+			this.particles[parseInt(particle.particle_id)] = new particlesRenderer(particle);
 		}
 	}		
 }

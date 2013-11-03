@@ -28,8 +28,22 @@ function loadMap ($mapID)
 		}
 	}
 	
+	$query = "SELECT p.particle_id, p.particle_image
+				FROM particles p
+				JOIN map_particles m ON (m.particle_id = p.particle_id)
+				WHERE m.map_id = $mapID";
+	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
+	
+	$particles = array();
+	if(mysql_num_rows($result)) {
+		while($particle = mysql_fetch_assoc($result)) {
+			$particles[] = $particle;
+		}
+	}
+	
+	
 	header('Content-type: application/json');
-	echo json_encode(array('mapID'=>$mapID, 'materials'=>$materials, 'tiles'=>$tiles));
+	echo json_encode(array('mapID'=>$mapID, 'materials'=>$materials, 'tiles'=>$tiles, 'particles'=>$particles));
 }
 		
 ?>

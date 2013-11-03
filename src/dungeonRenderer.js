@@ -1,10 +1,5 @@
-function dungeonRenderer(container) {
+function dungeonRenderer($container) {
 
-	var $container = $(container);
-	this.WIDTH = window.innerWidth;
-	this.HEIGHT = window.innerHeight;
-	this.ASPECT = this.WIDTH / this.HEIGHT;
-		
 	this.NEAR = 1;
 	this.FAR = 50000;
 	
@@ -21,12 +16,10 @@ function dungeonRenderer(container) {
 	this.camera.rotation.y = - DOUBLE_RIGHT_ANGLE;		
 	this.scene.add(this.camera);	
 	
-	THREEx.WindowResize(this.renderer, this.camera);
-	
 	this.tileGeometry = new THREE.PlaneGeometry( TILE_SIZE, TILE_SIZE );
 
 	this.getMaterial = function (material) {
-		var texture = THREE.ImageUtils.loadTexture( "images/" + material.texture_image );
+		var texture = THREE.ImageUtils.loadTexture( "images/textures/" + material.texture_image );
 		return new THREE.MeshPhongMaterial( { color: 0xffffff, map: texture } );
 	}
 	
@@ -78,7 +71,7 @@ function dungeonRenderer(container) {
 		var sphereGeom = new THREE.SphereGeometry(100, 32, 16);
     
 		/* moon */
-		var moonTexture = THREE.ImageUtils.loadTexture( 'images/moon.jpg' );
+		var moonTexture = THREE.ImageUtils.loadTexture( 'images/textures/moon.jpg' );
 		var moonMaterial = new THREE.MeshBasicMaterial( { map: moonTexture } );
 		var moon = new THREE.Mesh(sphereGeom, moonMaterial);
 		moon.position.set(550,750,550);
@@ -160,5 +153,16 @@ function dungeonRenderer(container) {
 		this.scene.add( sprite );
 
 	}
+	
+	this.WindowResize = function() {
+		this.WIDTH = window.innerWidth;
+		this.HEIGHT = window.innerHeight - 5;
+		this.ASPECT = this.WIDTH / this.HEIGHT;
+		this.renderer.setSize( this.WIDTH, this.HEIGHT );
+		this.camera.aspect = this.ASPECT;
+		this.camera.updateProjectionMatrix();
+	}
+	
+	this.WindowResize();
 	
 }

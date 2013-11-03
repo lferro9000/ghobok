@@ -1,11 +1,11 @@
 <?php
 
-$method = isset($_GET['method']) ? $_GET['method'] : $_POST['method'];
+include (__DIR__.'/src/php/global.php');
+global $db;
+
+$method = ghobok_get('method');
 	
 if (isset($method)) {
-
-	include (__DIR__.'/src/php/db.php');
-	global $db;
 		
 	switch ($method) {
 		case 'load_map':
@@ -22,7 +22,9 @@ if (isset($method)) {
 			break;
 		case 'material_manager':
 			include (__DIR__.'/src/php/materialManager.php');
-			//deleteTile($_POST['tile_id']);
+			break;
+		case 'edit_material':
+			include (__DIR__.'/src/php/editMaterial.php');
 			break;
 		default:
 			die('Method '. $method . ' unknown.');

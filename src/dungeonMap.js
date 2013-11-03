@@ -5,7 +5,7 @@ function dungeonMap() {
 	this.tiles = new Array();
 
 	this.getMaterial = function (material) {
-		var texture = THREE.ImageUtils.loadTexture( "images/" + material.texture_image );
+		var texture = THREE.ImageUtils.loadTexture( "images/textures/" + material.texture_image );
 		return new THREE.MeshPhongMaterial( { color: 0xffffff, map: texture } );
 	}
 	

@@ -1,0 +1,10 @@
+body {
+	padding:10px;
+	background:url(images/hud/hud_background.png) repeat scroll 0 0;
+	color:White;
+}
+		
+a {
+	color:Yellow;
+	font-weight:bold;
+}

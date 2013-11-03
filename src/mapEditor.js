@@ -114,8 +114,10 @@ function mapEditor () {
 	this.openMaterialManager = function() {
 		if (!(this.materialManager)) {
 			this.materialManager = $('<iframe id="material-manager" >').attr('src', 'ghobok.php?method=material_manager').appendTo('body');
+			return this.materialManager;
+		} else {
+			return this.materialManager.toggle();
 		}
-		return this.materialManager.show();
 	}
 	
 	this.closeMaterialManager = function() {

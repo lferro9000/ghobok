@@ -44,16 +44,20 @@ function finishLoadingMap(map_json) {
 	animationFrame();
 }
 
-function onDocumentMouseMove(event) {
+function OnDocumentMouseMove(event) {
 	mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
 	mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 }
 
-function onDocumentMouseDown( event ) {
+function OnDocumentMouseDown( event ) {
 	mouse.mouseDown();
 }
-	
-function keypress(e) {
+
+function OnWindowResize() {
+	dr.WindowResize();
+}
+
+function OnKeyPress(e) {
 	var key = e.keyCode ? e.keyCode : e.charCode;
 	processKeyPress(key);
 	return false;
@@ -62,19 +66,20 @@ function keypress(e) {
 /* INIT */	
 $( function () {
 
-	dr = new dungeonRenderer('#container');
+	var $container = $('#container');
+	
+	dr = new dungeonRenderer($container);
 	mouse = new mouseSelect();
 	map = new dungeonMap();
 	party = new adventurersParty(0, 0, 0, DIRECTION_SOUTH);
 	hud = new ghobokHUD('#hud');
 	editor = new mapEditor();
 
-	document.addEventListener( 'keypress', keypress, false );
-	
-	var container = document.getElementById('container');
-	container.addEventListener( 'mousemove', onDocumentMouseMove, false );
-	container.addEventListener( 'mousedown', onDocumentMouseDown, false );
-	
+	window.addEventListener('resize', OnWindowResize, false);
+	document.addEventListener( 'keypress', OnKeyPress, false );
+	$container.bind( 'mousemove', OnDocumentMouseMove );
+	$container.bind( 'mousedown', OnDocumentMouseDown );
+		
 	startLoadingMap(1);	
 			
 });

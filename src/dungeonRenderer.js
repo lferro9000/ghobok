@@ -71,7 +71,7 @@ function dungeonRenderer($container) {
 		}
 		
 		this.createHUDSprites();
-		
+		hud.render(this.scene);
 		this.animated = new animatedObject();
 		
 		this.syncWithPartyPosition(party);

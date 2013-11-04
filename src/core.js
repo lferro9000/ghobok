@@ -58,7 +58,7 @@ $( function () {
 	dr = new dungeonRenderer($container);
 	mouse = new mouseSelect();
 	map = new dungeonMap();
-	party = new adventurersParty(1, -12, 0, DIRECTION_SOUTH);
+	party = new adventurersParty(2, -18, 0, DIRECTION_WEST);
 	hud = new ghobokHUD('#hud');
 	editor = new mapEditor();
 

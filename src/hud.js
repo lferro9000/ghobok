@@ -37,10 +37,22 @@ function ghobokHUD(container) {
 		var scaleX = mapA.image.width;
 		var scaleY = mapA.image.height;
 
-		var materialA1 = new THREE.SpriteMaterial( { map: mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 0.85 } );
+		var materialA1 = new THREE.SpriteMaterial( { map: mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 1 } );
 
 		var sprite = new THREE.Sprite( materialA1 );
 		sprite.position.set( 500, (this.HEIGHT - 206), 0 );
+		sprite.scale.set( 168, 206, 1 );
+		scene.add( sprite );
+		
+		var mapB = THREE.ImageUtils.loadTexture( "images/characters/gibri-man.png");
+		
+		scaleX = mapB.image.width;
+		scaleY = mapB.image.height;
+
+		var materialB1 = new THREE.SpriteMaterial( { map: mapB, alignment: THREE.SpriteAlignment.topLeft, opacity: 1 } );
+
+		sprite = new THREE.Sprite( materialB1 );
+		sprite.position.set( 800, (this.HEIGHT - 206), 0 );
 		sprite.scale.set( 168, 206, 1 );
 		scene.add( sprite );
 	}

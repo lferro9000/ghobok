@@ -28,22 +28,18 @@ function loadMap ($mapID)
 		}
 	}
 	
-	$query = "SELECT p.particle_id, p.particle_image
-				FROM particles p
-				JOIN map_particles m ON (m.particle_id = p.particle_id)
-				WHERE m.map_id = $mapID";
+	$query = "SELECT * FROM weather_effects	WHERE map_id = $mapID ORDER BY weather_effect_id desc";
 	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
 	
-	$particles = array();
+	$effects = array();
 	if(mysql_num_rows($result)) {
-		while($particle = mysql_fetch_assoc($result)) {
-			$particles[] = $particle;
+		while($effect = mysql_fetch_assoc($result)) {
+			$effects[] = $effect;
 		}
 	}
-	
-	
+		
 	header('Content-type: application/json');
-	echo json_encode(array('mapID'=>$mapID, 'materials'=>$materials, 'tiles'=>$tiles, 'particles'=>$particles));
+	echo json_encode(array('mapID'=>$mapID, 'materials'=>$materials, 'tiles'=>$tiles, 'weather_effects'=>$effects));
 }
 		
 ?>

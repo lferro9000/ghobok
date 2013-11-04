@@ -3,7 +3,12 @@ function dungeonRenderer($container) {
 	this.NEAR = 1;
 	this.FAR = 50000;
 	
+	this.clock = new THREE.Clock();
+	
 	this.renderer = new THREE.WebGLRenderer();
+	this.renderer.shadowMapEnabled = true;
+	this.renderer.shadowMapSoft = true;
+	
 	this.renderer.setSize(this.WIDTH, this.HEIGHT);
 	$container.append(this.renderer.domElement);
 	
@@ -20,7 +25,7 @@ function dungeonRenderer($container) {
 
 	this.getMaterial = function (material) {
 		var texture = THREE.ImageUtils.loadTexture( "images/textures/" + material.texture_image );
-		return new THREE.MeshPhongMaterial( { color: 0xffffff, map: texture } );
+		return new THREE.MeshLambertMaterial( { color: 0xffffff, map: texture } );
 	}
 	
 	this.getTileMesh = function (material) {
@@ -33,6 +38,14 @@ function dungeonRenderer($container) {
 		mesh.position.set( meshPosition.positionX, meshPosition.positionY, meshPosition.positionZ);
 		mesh.rotation.x = meshPosition.rotationX;
 		mesh.rotation.y = meshPosition.rotationY;
+		
+		//mesh.material.side = THREE.DoubleSide;
+		if (tile.tileType == TILE_TYPE_FLOOR) {
+			//mesh.receiveShadow = true;
+		} else {
+			mesh.castShadow = true;
+		}
+		
 		mesh.tile = tile;
 		tile.mesh = mesh;
 		this.scene.add(mesh);
@@ -55,19 +68,29 @@ function dungeonRenderer($container) {
 		skyBox.position.y = 0;
 		this.scene.add( skyBox );
 			
-		this.partyLight = new THREE.PointLight( 0xf0a0a0, 0.45 );
+		this.partyLight = new THREE.PointLight( 0xa0a0a0, 1, 5000 );
 		this.partyLight.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
 		this.scene.add(this.partyLight);
 		//this.scene.fog = new THREE.Fog( 0x000000, 1500, 3000 ) ;
+		
+		// SUN
+		this.sun = new THREE.PointLight( 0xffffff, 1, 55500 );
+		this.sun.position.set(-20000, 25000, -20000);
+		//this.sun.castShadow = true;
+		this.scene.add(this.sun);
+		
+		this.sun2 = new THREE.PointLight( 0xffffff, 1 , 55000);
+		this.sun2.position.set(20000, 25000, 20000);
+		this.scene.add(this.sun2);
 		
 		for(tileID in map.tiles) 
 		{ 
 			this.renderTile(map.tiles[tileID]);
 		}
 		
-		for(particleID in map.particles) 
+		for(weather_effect_id in map.weather_effects) 
 		{ 
-			map.particles[particleID].render(this.scene);
+			map.weather_effects[weather_effect_id].addToScene(this.scene);
 		}
 		
 		this.createHUDSprites();
@@ -109,9 +132,9 @@ function dungeonRenderer($container) {
 	this.animationFrame = function () {
 		this.animated.animate();
 		
-		for(particleID in map.particles) 
+		for(weather_effect_id in map.weather_effects) 
 		{ 
-			map.particles[particleID].animate();
+			map.weather_effects[weather_effect_id].animationFrame(this.clock);
 		}
 		
 		this.renderer.render( this.scene, this.camera );

@@ -88,10 +88,12 @@ function dungeonRenderer($container) {
 			map.weather_effects[weather_effect_id].addToScene(this.scene);
 		}
 		
-		this.createHUDSprites();
-		hud.render(this.scene);
+		/* HUD */
+		hud.addToScene(this.scene);
+		
 		this.animated = new animatedObject();
 		
+		/* MOVE CAMERA TO PARTY POSITION */
 		this.syncWithPartyPosition(party);
 	}
 	
@@ -155,29 +157,13 @@ function dungeonRenderer($container) {
 		this.renderer.render( this.scene, this.camera );
 	}
 	
-	/* HUD */
-	this.mapA = THREE.ImageUtils.loadTexture( "images/sprite0.png", undefined/* function() { this.createHUDSprites() }*/ );
-		
-	this.createHUDSprites = function() {
-		var scaleX = this.mapA.image.width;
-		var scaleY = this.mapA.image.height;
-
-		var materialA1 = new THREE.SpriteMaterial( { map: this.mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 0.25 } );
-
-		var sprite = new THREE.Sprite( materialA1 );
-		sprite.position.set( 20, 20, 0 );
-		sprite.scale.set( scaleX, scaleY, 1 );
-		this.scene.add( sprite );
-
-	}
-	
 	this.WindowResize = function() {
 		this.WIDTH = window.innerWidth;
 		this.HEIGHT = window.innerHeight - 5;
 		this.ASPECT = this.WIDTH / this.HEIGHT;
 		this.renderer.setSize( this.WIDTH, this.HEIGHT );
 		this.camera.aspect = this.ASPECT;
-		this.camera.updateProjectionMatrix();
+		this.camera.updateProjectionMatrix();		
 	}
 	
 	this.WindowResize();

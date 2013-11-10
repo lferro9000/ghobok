@@ -1,7 +1,5 @@
 function ghobokHUD(container) {
-	var $container = $(container);
-	this.WIDTH = $container.width();
-	this.HEIGHT = $( window ).height();
+	this.container = $(container);
 
 	this.refresh = function () {
 		var html = "<p class=\"hud-text\">";
@@ -10,7 +8,7 @@ function ghobokHUD(container) {
 		html += "East: <b>" + party.position.stepsEast + "</b><br/>";
 		html += "Direction: <b>" + this.getDirectionName(party.position.direction) + "</b><br/>";
 		html += "</p>";
-		$container.html( html );
+		this.container.html( html );
 	}
 	
 	this.getDirectionName = function (direction) {
@@ -30,31 +28,37 @@ function ghobokHUD(container) {
 		}
 	}
 
-	this.render = function (scene) {
+	this.windowResized = function() {
+		this.WIDTH = this.container.width();
+		this.HEIGHT = $( window ).height();
+		
+		this.woman.position.set( 500, (this.HEIGHT - 130), 0 );			
+		this.man.position.set( 800, (this.HEIGHT - 130), 0 );		
+		this.info.position.set( 20, 20, 0 );				
+	}
+	
+	this.addToScene = function (scene) {
 		
 		var mapA = THREE.ImageUtils.loadTexture( "images/characters/gibri-woman.png");
 		
-		var scaleX = mapA.image.width;
-		var scaleY = mapA.image.height;
-
-		var materialA1 = new THREE.SpriteMaterial( { map: mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 1 } );
-
-		var sprite = new THREE.Sprite( materialA1 );
-		sprite.position.set( 500, (this.HEIGHT - 206), 0 );
-		sprite.scale.set( 168, 206, 1 );
-		scene.add( sprite );
+		var materialA = new THREE.SpriteMaterial( { map: mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 1 } );
+		this.woman = new THREE.Sprite( materialA );	
+		this.woman.scale.set( 100, 130, 1 );		
+		scene.add( this.woman );
 		
-		var mapB = THREE.ImageUtils.loadTexture( "images/characters/gibri-man.png");
+		mapA = THREE.ImageUtils.loadTexture( "images/characters/gibri-man.png");
+		materialA = new THREE.SpriteMaterial( { map: mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 1 } );
+		this.man = new THREE.Sprite( materialA );
+		this.man.scale.set( 100, 130, 1 );		
+		scene.add( this.man );
 		
-		scaleX = mapB.image.width;
-		scaleY = mapB.image.height;
+		mapA = THREE.ImageUtils.loadTexture( "images/sprite0.png");
+		var materialA = new THREE.SpriteMaterial( { map: mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 0.25 } );
+		this.info = new THREE.Sprite( materialA );	
+		this.info.scale.set( 150, 150, 1 );		
+		scene.add( this.info );
 
-		var materialB1 = new THREE.SpriteMaterial( { map: mapB, alignment: THREE.SpriteAlignment.topLeft, opacity: 1 } );
-
-		sprite = new THREE.Sprite( materialB1 );
-		sprite.position.set( 800, (this.HEIGHT - 206), 0 );
-		sprite.scale.set( 168, 206, 1 );
-		scene.add( sprite );
+		this.windowResized();
 	}
 	
 	this.refresh();

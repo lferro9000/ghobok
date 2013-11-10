@@ -42,6 +42,7 @@ function OnDocumentMouseDown( event ) {
 
 function OnWindowResize() {
 	dr.WindowResize();
+	hud.windowResized();
 }
 
 function OnKeyPress(e) {

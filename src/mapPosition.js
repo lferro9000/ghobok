@@ -5,19 +5,21 @@ function mapPosition(stepsSouth, stepsEast, stepsUp, direction) {
 	this.direction = direction;
 	
 	this.move = function (direction) {
-		switch(direction) {
-			case DIRECTION_NORTH:
-				this.stepsSouth -= 1;
-				break;
-			case DIRECTION_WEST:
-				this.stepsEast -= 1;
-				break;
-			case DIRECTION_SOUTH:
-				this.stepsSouth += 1;
-				break;
-			case DIRECTION_EAST:
-				this.stepsEast += 1;
-				break;	
+		if (map.plan.canWalk(this.stepsUp, this.stepsEast, this.stepsSouth, direction)) {		
+			switch(direction) {
+				case DIRECTION_NORTH:
+					this.stepsSouth -= 1;
+					break;
+				case DIRECTION_WEST:
+					this.stepsEast -= 1;
+					break;
+				case DIRECTION_SOUTH:
+					this.stepsSouth += 1;
+					break;
+				case DIRECTION_EAST:
+					this.stepsEast += 1;
+					break;	
+			}
 		}
 	}
 	

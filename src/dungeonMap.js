@@ -4,7 +4,9 @@ function dungeonMap() {
 	this.materials = new Array();
 	this.tiles = new Array();
 	this.weather_effects = new Array();
-
+	
+	this.plan = new mapPlan();
+	
 	this.getMaterial = function (material_json) {
 		var texture = THREE.ImageUtils.loadTexture( "images/textures/" + material_json.texture_image );
 		return new THREE.MeshLambertMaterial( { color: 0xffffff, map: texture } );
@@ -20,8 +22,11 @@ function dungeonMap() {
 			this.materials[parseInt(map_json.materials[i].material_id)] = material ;
 		}
 		
+		var tile;
 		for (var i=0; i<map_json.tiles.length; i++) { 
-			this.tiles[parseInt(map_json.tiles[i].tile_id)] = new dungeonTile(map_json.tiles[i]);
+			tile = new dungeonTile(map_json.tiles[i]);
+			this.tiles[parseInt(map_json.tiles[i].tile_id)] = tile;
+			this.plan.addTile(tile);			
 		}
 		
 		var effect;
@@ -31,3 +36,5 @@ function dungeonMap() {
 		}
 	}		
 }
+
+

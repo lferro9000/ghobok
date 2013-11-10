@@ -1,7 +1,7 @@
 function mapEditor () {
 	
-	this.tileEditEnabled = false;
 	this.tileDeleteEnabled = false;
+	this.skywalker = false;
 	this.parameters = null;
 	this.gui = null;
 	this.defaultMaterialID = 0;
@@ -18,11 +18,12 @@ function mapEditor () {
 		this.gui = new dat.GUI();
 		
 		this.parameters = {
-			floatUp: function() { party.position.stepsUp += 1; dr.syncWithPartyPosition(); hud.refresh(); },
-			floatDown: function() { party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); }			
+			floatUp: function() { editor.skywalker = true;party.position.stepsUp += 1; dr.syncWithPartyPosition(); hud.refresh(); },
+			floatDown: function() { editor.skywalker = true;party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); }			
 		};
 		
 		var folder0 = this.gui.addFolder('Float');
+		folder0.add( this, 'skywalker' ).name("Skywalker").listen();
 		folder0.add( this.parameters, 'floatUp' ).name("Up");
 		folder0.add( this.parameters, 'floatDown' ).name("Down");
 		folder0.open();

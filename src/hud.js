@@ -7,7 +7,7 @@ function ghobokHUD(container) {
 		var html = "<p class=\"hud-text\">";
 		html += "Up: <b>" + party.position.stepsUp + "</b><br/>";
 		html += "South: <b>" + party.position.stepsSouth + "</b><br/>";
-		html += "West: <b>" + party.position.stepsWest + "</b><br/>";
+		html += "East: <b>" + party.position.stepsEast + "</b><br/>";
 		html += "Direction: <b>" + this.getDirectionName(party.position.direction) + "</b><br/>";
 		html += "</p>";
 		$container.html( html );

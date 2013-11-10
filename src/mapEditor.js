@@ -74,7 +74,7 @@ function mapEditor () {
 		this.defaultTileTypeStr = this.parameters.tileTypeStr;
 		var tile = new dungeonTile();
 		tile.stepsSouth = party.position.stepsSouth;
-		tile.stepsWest = party.position.stepsWest;
+		tile.stepsEast = party.position.stepsEast;
 		tile.stepsUp = party.position.stepsUp;
 		tile.direction = party.position.direction;
 		tile.tileType = getTileTypeFromString(this.parameters.tileTypeStr);

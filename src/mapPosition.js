@@ -1,6 +1,6 @@
-function mapPosition(stepsSouth, stepsWest, stepsUp, direction) {
+function mapPosition(stepsSouth, stepsEast, stepsUp, direction) {
 	this.stepsSouth = stepsSouth;
-	this.stepsWest = stepsWest;
+	this.stepsEast = stepsEast;
 	this.stepsUp = stepsUp;
 	this.direction = direction;
 	
@@ -9,14 +9,14 @@ function mapPosition(stepsSouth, stepsWest, stepsUp, direction) {
 			case DIRECTION_NORTH:
 				this.stepsSouth -= 1;
 				break;
-			case DIRECTION_EAST:
-				this.stepsWest -= 1;
+			case DIRECTION_WEST:
+				this.stepsEast -= 1;
 				break;
 			case DIRECTION_SOUTH:
 				this.stepsSouth += 1;
 				break;
-			case DIRECTION_WEST:
-				this.stepsWest += 1;
+			case DIRECTION_EAST:
+				this.stepsEast += 1;
 				break;	
 		}
 	}
@@ -59,7 +59,7 @@ function mapPosition(stepsSouth, stepsWest, stepsUp, direction) {
 	}
 	
 	this.getWebGLPosition = function() {
-		var x = (party.position.stepsWest * TILE_SIZE);
+		var x = (party.position.stepsEast * TILE_SIZE);
 		var y = (party.position.stepsUp * TILE_SIZE) - 150;
 		var z = (party.position.stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;
 		var rotationY = this.getDirectionInRads();
@@ -67,7 +67,7 @@ function mapPosition(stepsSouth, stepsWest, stepsUp, direction) {
 	}
 	
 	this.clone = function() {
-		return new mapPosition(this.stepsSouth, this.stepsWest, this.stepsUp, this.direction);
+		return new mapPosition(this.stepsSouth, this.stepsEast, this.stepsUp, this.direction);
 	}
 	
 }
@@ -76,10 +76,10 @@ function directionTurn (direction, turn_steps) {
 
 	direction = direction + turn_steps;
 	
-	if (direction > DIRECTION_WEST) {
+	if (direction > DIRECTION_EAST) {
 		direction = direction % 4;
 	} else if (direction < DIRECTION_NORTH) {
-		direction = DIRECTION_WEST + 1 + (direction % -4);
+		direction = DIRECTION_EAST + 1 + (direction % -4);
 	}
 	
 	return direction;
@@ -115,9 +115,9 @@ function webGLPosition(x, y, z, rotationX, rotationY, rotationZ) {
 		this.y = this.processTransition(this.y, requested.y, MOVEMENT_STEP);
 		this.z = this.processTransition(this.z, requested.z, MOVEMENT_STEP);
 		this.rotationX = this.processTransition(this.rotationX, requested.rotationX, MOVEMENT_TURN);
-		if ((this.rotationY == DIRECTION_SOUTH_RADS) && (requested.rotationY == DIRECTION_WEST_RADS)) {
+		if ((this.rotationY == DIRECTION_SOUTH_RADS) && (requested.rotationY == DIRECTION_EAST_RADS)) {
 			this.rotationY = - DIRECTION_SOUTH_RADS;
-		} else if ((this.rotationY == DIRECTION_WEST_RADS) && (requested.rotationY == DIRECTION_SOUTH_RADS)) {
+		} else if ((this.rotationY == DIRECTION_EAST_RADS) && (requested.rotationY == DIRECTION_SOUTH_RADS)) {
 			this.rotationY = 3 * RIGHT_ANGLE;
 		}
 		this.rotationY = this.processTransition(this.rotationY, requested.rotationY, MOVEMENT_TURN);

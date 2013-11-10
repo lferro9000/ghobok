@@ -1,4 +1,4 @@
-function adventurersParty(stepsSouth, stepsWest, stepsUp, direction) {
-	this.position = new mapPosition(stepsSouth, stepsWest, stepsUp, direction);
+function adventurersParty(stepsSouth, stepsEast, stepsUp, direction) {
+	this.position = new mapPosition(stepsSouth, stepsEast, stepsUp, direction);
 	this.requestedPosition = this.position.clone();
 }

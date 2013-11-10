@@ -7,7 +7,7 @@ function saveTile($mapID, $tile_json) {
 	
 	$tileID = $tile->tileID;
 	$stepsSouth = $tile->stepsSouth;
-	$stepsWest = $tile->stepsWest;
+	$stepsEast = $tile->stepsEast;
 	$stepsUp = $tile->stepsUp;
 	$direction = $tile->direction;
 	$tileType = $tile->tileType;
@@ -18,7 +18,7 @@ function saveTile($mapID, $tile_json) {
 					FROM tiles			
 					WHERE map_id = $mapID 
 					and steps_south = $stepsSouth 
-					and steps_west = $stepsWest 
+					and steps_east = $stepsEast 
 					and steps_up = $stepsUp
 					and tile_type = $tileType 
 					and (tile_type < 2 or direction = $direction) ";
@@ -29,8 +29,8 @@ function saveTile($mapID, $tile_json) {
 		if ($count > 0) {
 			die('This tile aready exists in this map.');
 		} else {
-			$query = "INSERT INTO tiles	(map_id, steps_south, steps_west, steps_up, tile_type, direction, material_id)
-						VALUES ($mapID, $stepsSouth, $stepsWest, $stepsUp, $tileType, $direction, $materialID);";
+			$query = "INSERT INTO tiles	(map_id, steps_south, steps_east, steps_up, tile_type, direction, material_id)
+						VALUES ($mapID, $stepsSouth, $stepsEast, $stepsUp, $tileType, $direction, $materialID);";
 			$result = mysql_query($query,$db) or die('Debile query:  '.$query);
 			echo ('Tile saved.');
 		}

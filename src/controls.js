@@ -4,26 +4,38 @@ function processKeyPress(key) {
 
 	switch (key) {
 		case KEYS.moveForward:
-			party.position.forward();
+			if (!dr.webGLPositionDiff.anythingToMove) {
+				party.position.forward();
+			}
 			break;
 		case KEYS.turnLeft:
-			party.position.turn(TURN_LEFT);
+			if (!dr.webGLPositionDiff.anythingToMove) {
+				party.position.turn(TURN_LEFT);
+			}
 			break;
 		case KEYS.moveBackward:
-			party.position.backward();
+			if (!dr.webGLPositionDiff.anythingToMove) {
+				party.position.backward();
+			}
 			break;
 		case KEYS.turnRight:
-			party.position.turn(TURN_RIGHT);
+			if (!dr.webGLPositionDiff.anythingToMove) {
+				party.position.turn(TURN_RIGHT);
+			}
 			break;
 		case KEYS.strideLeft:
-			party.position.strideLeft();
+			if (!dr.webGLPositionDiff.anythingToMove) {
+				party.position.strideLeft();
+			}
 			break;
 		case KEYS.strideRight:
-			party.position.strideRight();
+			if (!dr.webGLPositionDiff.anythingToMove) {
+				party.position.strideRight();
+			}
 			break;
 	}
 
-	dr.syncWithPartyPosition();
+	dr.startMovingParty();
 	hud.refresh();
 	
 }

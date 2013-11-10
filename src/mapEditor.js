@@ -72,36 +72,15 @@ function mapEditor () {
 	
 	this.insertTile = function () {
 		this.defaultTileTypeStr = this.parameters.tileTypeStr;
-		var tile = new dungeonTile(0, party.position.stepsSouth, party.position.stepsWest, party.position.stepsUp, party.position.direction, getTileTypeFromString(this.parameters.tileTypeStr), this.defaultMaterialID);
-		dr.renderTile(tile);
+		var tile = new dungeonTile();
+		tile.stepsSouth = party.position.stepsSouth;
+		tile.stepsWest = party.position.stepsWest;
+		tile.stepsUp = party.position.stepsUp;
+		tile.direction = party.position.direction;
+		tile.tileType = getTileTypeFromString(this.parameters.tileTypeStr);
+		tile.materialID = this.defaultMaterialID;
+		tile.addToScene(dr.scene, dr.tileGeometry, map.materials);
 		$.post("ghobok.php", { method: "save_tile", mapID:map.mapID, tile_json:tile.getJSON() }, function (data) { console.log("Tile inserted:" + data); } );
-	}
-	
-	this.editTile = function (tile) {
-		this.reset();
-		
-		this.parameters = {
-			tile: tile,
-			saveTile: function() { editor.saveTile() },
-			cancel: function() { editor.mainMenu() },
-		};
-		
-		this.gui.add( this.parameters.tile, 'tileID' ).name('Tile ID');
-		this.gui.add( this.parameters.tile, 'stepsSouth' ).name('Steps South');
-		this.gui.add( this.parameters.tile, 'stepsWest' ).name('Steps West');
-		this.gui.add( this.parameters.tile, 'stepsUp' ).name('Steps Up');
-		this.gui.add( this.parameters.tile, 'direction' ).name('Direction');
-		this.gui.add( this.parameters.tile, 'tileType' ).name('Type');
-		this.gui.add( this.parameters.tile, 'materialID' ).name('Material');
-		this.gui.add( this.parameters, 'saveTile' ).name('Save');
-		this.gui.add( this.parameters, 'cancel' ).name('Cancel');
-		this.gui.open();
-	}
-	
-	this.saveTile = function () {
-		dr.renderTile(this.parameters.tile);
-		$.post("ghobok.php", { method: "save_tile", tile_json:this.parameters.tile.getJSON() }, function (data) { console.log("Tile saved:" + data); } );
-		this.addTile();
 	}
 	
 	this.eraseTiles = function () {

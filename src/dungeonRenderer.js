@@ -6,8 +6,14 @@ function dungeonRenderer($container) {
 	this.clock = new THREE.Clock();
 	
 	this.renderer = new THREE.WebGLRenderer();
+	
+	// shading
+	this.renderer.gammaInput = true;
+	this.renderer.gammaOutput = true;
+	this.renderer.physicallyBasedShading = true;
+	this.renderer.shadowMapCullFace = THREE.CullFaceBack;
 	this.renderer.shadowMapEnabled = true;
-	this.renderer.shadowMapSoft = true;
+	//this.renderer.shadowMapSoft = true;
 	
 	this.renderer.setSize(this.WIDTH, this.HEIGHT);
 	$container.append(this.renderer.domElement);
@@ -15,45 +21,20 @@ function dungeonRenderer($container) {
 	this.scene = new THREE.Scene();
 	
 	this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, this.ASPECT, this.NEAR, this.FAR );
-	this.camera.position.x = 0;
-	this.camera.position.y = 0;
-	this.camera.position.z = 500;
-	this.camera.rotation.y = - DOUBLE_RIGHT_ANGLE;		
+		
 	this.scene.add(this.camera);	
 	
 	this.tileGeometry = new THREE.PlaneGeometry( TILE_SIZE, TILE_SIZE );
 
 	this.getMaterial = function (material) {
 		var texture = THREE.ImageUtils.loadTexture( "images/textures/" + material.texture_image );
-		return new THREE.MeshLambertMaterial( { color: 0xffffff, map: texture } );
-	}
-	
-	this.getTileMesh = function (material) {
-		return new THREE.Mesh( this.tileGeometry, material );
-	}
-	
-	this.renderTile = function (tile) {
-		var mesh = this.getTileMesh(map.materials[tile.materialID]);
-		var meshPosition = new tileMeshPosition(tile);
-		mesh.position.set( meshPosition.positionX, meshPosition.positionY, meshPosition.positionZ);
-		mesh.rotation.x = meshPosition.rotationX;
-		mesh.rotation.y = meshPosition.rotationY;
-		
-		//mesh.material.side = THREE.DoubleSide;
-		if (tile.tileType == TILE_TYPE_FLOOR) {
-			//mesh.receiveShadow = true;
-		} else {
-			mesh.castShadow = true;
-		}
-		
-		mesh.tile = tile;
-		tile.mesh = mesh;
-		this.scene.add(mesh);
+		return new THREE.MeshLambertMaterial( { color: 0xffffff, map: texture } );		
 	}
 	
 	this.renderDungeon = function () {
 				
-		var imagePrefix = "images/sky/dawnmountain-";
+		//var imagePrefix = "images/sky/dawnmountain-";
+		var imagePrefix = "images/sky/abovesea-";
 		var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
 		var imageSuffix = ".png";
 		var skyGeometry = new THREE.CubeGeometry( 50000, 50000, 50000 );	
@@ -74,22 +55,36 @@ function dungeonRenderer($container) {
 		//this.scene.fog = new THREE.Fog( 0x000000, 1500, 3000 ) ;
 		
 		// SUN
+		light = new THREE.SpotLight( 0xffffff, 1, 0, Math.PI, 1 );
+		light.position.set( 0, 0, 0 );
+		light.target.position.set( 500, 0, 1000 );
+		light.castShadow = true;
+		light.shadowCameraNear = 700;
+		light.shadowCameraFar = this.camera.far;
+		light.shadowCameraFov = 50;
+		light.shadowBias = 0.0001;
+		light.shadowDarkness = 0.5;
+		var SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 1024;
+		light.shadowMapWidth = SHADOW_MAP_WIDTH;
+		light.shadowMapHeight = SHADOW_MAP_HEIGHT;
+		this.scene.add( light );
+				
 		this.sun = new THREE.PointLight( 0xffffff, 1, 55500 );
 		this.sun.position.set(-20000, 25000, -20000);
 		//this.sun.castShadow = true;
-		this.scene.add(this.sun);
+		//this.scene.add(this.sun);
 		
 		this.sun2 = new THREE.PointLight( 0xffffff, 1 , 55000);
 		this.sun2.position.set(20000, 25000, 20000);
-		this.scene.add(this.sun2);
+		//this.scene.add(this.sun2);
 		
-		for(tileID in map.tiles) 
-		{ 
-			this.renderTile(map.tiles[tileID]);
+		/* TILES */
+		for(tileID in map.tiles) { 
+			map.tiles[tileID].addToScene(this.scene, this.tileGeometry, map.materials) ;
 		}
 		
-		for(weather_effect_id in map.weather_effects) 
-		{ 
+		/* WEATHER EFFECTS */
+		for(weather_effect_id in map.weather_effects) { 
 			map.weather_effects[weather_effect_id].addToScene(this.scene);
 		}
 		
@@ -122,19 +117,39 @@ function dungeonRenderer($container) {
 	}
 			
 	this.syncWithPartyPosition = function () {
-		this.camera.position.x = (party.position.stepsWest * TILE_SIZE);
-		this.camera.position.y = (party.position.stepsUp * TILE_SIZE) - 150;
-		this.camera.position.z = (party.position.stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;
-		this.camera.rotation.y = party.position.getDirectionInRads();
-		this.partyLight.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
+		var pos = party.position.getWebGLPosition();
+		this.syncWebGLPosition(pos.x, pos.y, pos.z, pos.rotationX, pos.rotationY, pos.rotationZ);
+		this.requestedWebGLPosition = pos;
+		this.webGLPositionDiff = new webGLPosition(0,0,0,0,0,0,0);
+	}
+	
+	this.syncWebGLPosition = function (x, y, z, rotationX, rotationY, rotationZ) {
+		this.camera.position.x = x;
+		this.camera.position.y = y;
+		this.camera.position.z = z;
+		this.camera.rotation.y = rotationY;
+		this.partyLight.position.set(x, y, z);
+	}
+	
+	this.startMovingParty = function () {
+		this.requestedWebGLPosition = party.position.getWebGLPosition();
+		this.webGLPositionDiff = new webGLPosition(this.camera.position.x - this.requestedWebGLPosition.x, this.camera.position.y - this.requestedWebGLPosition.y, this.camera.position.z - this.requestedWebGLPosition.z, 0, this.camera.rotation.y - this.requestedWebGLPosition.rotationY, 0);
 	}
 	
 	this.animationFrame = function () {
 		this.animated.animate();
 		
-		for(weather_effect_id in map.weather_effects) 
-		{ 
+		/* animate weather effects */
+		for(weather_effect_id in map.weather_effects) { 
 			map.weather_effects[weather_effect_id].animationFrame(this.clock);
+		}
+		
+		/* animate party movement */
+		if (this.webGLPositionDiff.anythingToMove) {
+			var newPosition = new webGLPosition(this.camera.position.x, this.camera.position.y, this.camera.position.z, this.camera.rotation.x, this.camera.rotation.y, this.camera.rotation.z);
+			newPosition.processMoveStep(this.requestedWebGLPosition);			
+			this.syncWebGLPosition(newPosition.x, newPosition.y, newPosition.z, newPosition.rotationX, newPosition.rotationY, newPosition.rotationZ);
+			this.webGLPositionDiff = new webGLPosition(this.camera.position.x - this.requestedWebGLPosition.x, this.camera.position.y - this.requestedWebGLPosition.y, this.camera.position.z - this.requestedWebGLPosition.z, 0, this.camera.rotation.y - this.requestedWebGLPosition.rotationY, 0);
 		}
 		
 		this.renderer.render( this.scene, this.camera );

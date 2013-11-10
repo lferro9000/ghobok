@@ -1,3 +1,45 @@
+function dungeonTile(tile_json) {
+	
+	this.tileID = 0;
+	
+	this.loadFromJSON = function(tile_json) {
+		this.tileID = parseInt(tile_json.tile_id);
+		this.stepsSouth = parseInt(tile_json.steps_south);
+		this.stepsWest = parseInt(tile_json.steps_west);
+		this.stepsUp = parseInt(tile_json.steps_up);
+		this.direction = parseInt(tile_json.direction);
+		this.tileType = parseInt(tile_json.tile_type);
+		this.materialID = parseInt(tile_json.material_id);
+	}
+	
+	if (tile_json) {
+		this.loadFromJSON(tile_json);
+	}
+	
+	this.addToScene = function (scene, geometry, materials) {
+		this.mesh = new THREE.Mesh( geometry, materials[this.materialID]);
+		var meshPosition = new tileMeshPosition(this);
+		this.mesh.position.set( meshPosition.positionX, meshPosition.positionY, meshPosition.positionZ);
+		this.mesh.rotation.x = meshPosition.rotationX;
+		this.mesh.rotation.y = meshPosition.rotationY;
+
+		this.mesh.receiveShadow = true;
+		this.mesh.castShadow = true;
+		
+		//mesh.material.side = THREE.DoubleSide;
+
+		this.mesh.tile = this;
+		
+		scene.add(this.mesh);
+	}
+	
+	this.getJSON = function () {
+		return JSON.stringify( {tileID: this.tileID, stepsSouth:this.stepsSouth, stepsWest:this.stepsWest, stepsUp:this.stepsUp, direction:this.direction, tileType:this.tileType, materialID:this.materialID } )
+	}
+		
+}
+
+/* calculate exact position and rotation of mesh for given tile */ 
 function tileMeshPosition(tile) {
 
 	if (tile.tileType == TILE_TYPE_FLOOR) {

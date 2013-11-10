@@ -20,6 +20,7 @@ function animatedObject() {
 		android.scale.set(2,2,2);
 		android.position.set (550,-280,1250);
 		android.rotation.y = DIRECTION_SOUTH_RADS;
+		android.castShadow = true;
 		dr.scene.add( android );
 		this.android = android;
 	}

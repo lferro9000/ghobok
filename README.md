@@ -1,4 +1,4 @@
 ghobok
 ======
 
-WebGL dungeon crawler.
+WebGL dungeon crawler game.

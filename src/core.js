@@ -20,11 +20,7 @@ function startLoadingMap (mapID) {
 function finishLoadingMap(map_json) {
 	map.loadMapFromJSON(map_json);
 	dr.renderDungeon();
-	var loader = new THREE.JSONLoader();	
-	loader.load( "models/horse.js", function( geometry ) {
-		dr.addMorph( geometry, 550, 500, -230, -250, 1000);
-	} );
-	
+		
 	var loader2 = new THREE.JSONLoader();	
 	loader2.load( "models/gator.js?v=2", function( geometry, materials ) { dr.animated.addModelToScene(geometry, materials) });
 	
@@ -59,7 +55,7 @@ $( function () {
 	dr = new dungeonRenderer($container);
 	mouse = new mouseSelect();
 	map = new dungeonMap();
-	party = new adventurersParty(3, 2, 0, DIRECTION_EAST);
+	party = new adventurersParty(1, -10, 0, DIRECTION_WEST);
 	hud = new ghobokHUD('#hud');
 	editor = new mapEditor();
 

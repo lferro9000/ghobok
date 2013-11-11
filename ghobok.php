@@ -10,21 +10,27 @@ if (isset($method)) {
 	switch ($method) {
 		case 'load_map':
 			include (__DIR__.'/src/php/loadMap.php');
-			loadMap(intval($_GET['map_id']));
 			break;
 		case 'save_tile':
 			include (__DIR__.'/src/php/saveTile.php');
-			saveTile($_POST['mapID'], $_POST['tile_json']);
 			break;
 		case 'delete_tile':
 			include (__DIR__.'/src/php/deleteTile.php');
-			deleteTile($_POST['tile_id']);
 			break;
 		case 'material_manager':
 			include (__DIR__.'/src/php/materialManager.php');
 			break;
 		case 'edit_material':
 			include (__DIR__.'/src/php/editMaterial.php');
+			break;
+		case 'object_manager':
+			include (__DIR__.'/src/php/objectManager.php');
+			break;
+		case 'edit_object':
+			include (__DIR__.'/src/php/editObject.php');
+			break;
+		case 'save_map_object':
+			include (__DIR__.'/src/php/saveMapObject.php');
 			break;
 		default:
 			die('Method '. $method . ' unknown.');

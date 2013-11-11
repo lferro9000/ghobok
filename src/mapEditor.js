@@ -9,6 +9,10 @@ function mapEditor () {
 	this.defaultTileTypeStr = "Floor";
 	this.materialManager = null;
 	
+	this.defaultObjectID = 0;
+	this.defaultObjectCategoryID = 1;
+	this.objectManager = null;
+	
 	this.reset = function () {
 		this.parameters = null;
 		if (this.gui) {
@@ -36,21 +40,25 @@ function mapEditor () {
 		this.parameters = {
 			materialManager: function() { editor.openMaterialManager() },
 			addTiles: function() { editor.addTiles() },
+			addObjects: function() { editor.addObjects() },
 			eraseTiles: function() { editor.eraseTiles() },
 			floatUp: function() { party.position.stepsUp += 1; dr.syncWithPartyPosition(); hud.refresh(); },
 			floatDown: function() { party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); }			
 		};
 		
-		this.gui.add( this.parameters, 'materialManager' ).name('Material manager');
-
 		var folder1 = this.gui.addFolder('Tiles');
 		folder1.add( this.parameters, 'addTiles' ).name("Dungeon drawing");
 		folder1.add( this.parameters, 'eraseTiles' ).name("Tile eraser");
 		folder1.open();
 		
+		var folder2 = this.gui.addFolder('Objects');
+		folder2.add( this.parameters, 'addObjects' ).name("Object drawing");
+		folder2.open();
+		
 		this.gui.open();
 	}
 	
+	/* Tile drawing */
 	this.addTiles = function () {
 		this.reset();
 				
@@ -81,30 +89,7 @@ function mapEditor () {
 		tile.tileType = getTileTypeFromString(this.parameters.tileTypeStr);
 		tile.materialID = this.defaultMaterialID;
 		tile.addToScene(dr.scene, dr.tileGeometry, map.materials);
-		$.post("ghobok.php", { method: "save_tile", mapID:map.mapID, tile_json:tile.getJSON() }, function (data) { console.log("Tile inserted:" + data); } );
-	}
-	
-	this.eraseTiles = function () {
-		this.reset();
-		this.tileDeleteEnabled = true;
-		
-		this.parameters = {
-			cancel: function() { 
-				editor.tileDeleteEnabled = false;
-				editor.mainMenu(); 
-			},
-		};
-		
-		var folder1 = this.gui.addFolder('Erasing tiles');
-		this.gui.add( this.parameters, 'cancel' ).name('Cancel');
-		folder1.open();
-
-		this.gui.open();
-	}
-	
-	this.deleteTile = function(tile) {
-		dr.scene.remove(tile.mesh);
-		$.post("ghobok.php", { method: "delete_tile", tile_id:tile.tileID }, function (data) { console.log("Tile deleted:" + data); } );
+		$.post("ghobok.php", { method: "save_tile", map_id:map.mapID, tile_json:tile.getJSON() }, function (data) { console.log("Tile inserted:" + data); } );
 	}
 	
 	this.openMaterialManager = function() {
@@ -137,6 +122,95 @@ function mapEditor () {
 		
 	}
 	
+	/* MAP OBJECTS */
+	this.addObjects = function () {
+		this.reset();
+				
+		this.parameters = {
+			object_id: 0,
+			x:0,
+			selectObject: function() { editor.selectObject() },
+			insertObject: function() { editor.insertObject() },
+			cancel: function() { editor.mainMenu() },
+		};
+		var folder1 = this.gui.addFolder("Object drawing");
+		folder1.add( this.parameters, 'object_id').name('Object ID').listen();
+		folder1.add( this.parameters, 'selectObject' ).name('Select object');
+		folder1.add( this.parameters, 'x' ).name('X').listen();
+		folder1.add( this.parameters, 'insertObject' ).name('Save');
+		folder1.add( this.parameters, 'cancel' ).name('Cancel');
+		folder1.open();
+		
+		this.gui.open();
+	}
+	
+	this.insertObject = function () {
+		var tile = new dungeonTile();
+		tile.stepsSouth = party.position.stepsSouth;
+		tile.stepsEast = party.position.stepsEast;
+		tile.stepsUp = party.position.stepsUp;
+		tile.direction = party.position.direction;
+		tile.tileType = getTileTypeFromString(this.parameters.tileTypeStr);
+		tile.materialID = this.defaultMaterialID;
+		tile.addToScene(dr.scene, dr.tileGeometry, map.materials);
+		$.post("ghobok.php", { method: "save_map_object", map_id:map.mapID, object_json:tile.getJSON() }, function (data) { console.log("Tile inserted:" + data); } );
+	}
+	
+	this.openObjectManager = function() {
+		if (!(this.objectManager)) {
+			this.objectManager = $('<iframe id="material-manager" >').appendTo('body');
+			return this.objectManager.attr('src', 'ghobok.php?method=object_manager&cat_id=' + this.defaultObjectCategoryID);
+		} else {
+			return this.objectManager.toggle();		
+		}
+	}
+	
+	this.closeObjectManager = function() {
+		if (this.objectManager) {
+			this.objectManager.hide();
+		}
+	}
+	
+	this.selectObject = function() {
+		var manager = this.openObjectManager();
+		$(manager).load(function() {
+			$(".select-button", manager.contents()).each( 
+				function(i, e) {
+					$(e).click( function () {
+						editor.parameters.object_id = $(e).attr('objectID');
+						editor.closeObjectManager();
+					});
+				} 
+			);
+		});
+		
+	}
+	
+	/* ERASER */
+	this.eraseTiles = function () {
+		this.reset();
+		this.tileDeleteEnabled = true;
+		
+		this.parameters = {
+			cancel: function() { 
+				editor.tileDeleteEnabled = false;
+				editor.mainMenu(); 
+			},
+		};
+		
+		var folder1 = this.gui.addFolder('Erasing tiles');
+		this.gui.add( this.parameters, 'cancel' ).name('Cancel');
+		folder1.open();
+
+		this.gui.open();
+	}
+	
+	this.deleteTile = function(tile) {
+		dr.scene.remove(tile.mesh);
+		$.post("ghobok.php", { method: "delete_tile", tile_id:tile.tileID }, function (data) { console.log("Tile deleted:" + data); } );
+	}
+	
+		
 	this.mainMenu();
 	
 }

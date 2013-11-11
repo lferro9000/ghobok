@@ -3,6 +3,8 @@ function dungeonMap() {
 	this.mapID = false;
 	this.materials = new Array();
 	this.tiles = new Array();
+	this.map_objects = new Array();
+	this.object_models = new Array();
 	this.weather_effects = new Array();
 	
 	this.plan = new mapPlan();
@@ -14,12 +16,26 @@ function dungeonMap() {
 	
 	this.loadMapFromJSON = function (map_json) {
 		
-		this.mapID = map_json.mapID;
+		this.mapID = map_json.map_id;
 		
 		var material;		
 		for (var i=0; i<map_json.materials.length; i++) { 
 			material = this.getMaterial(map_json.materials[i]);
-			this.materials[parseInt(map_json.materials[i].material_id)] = material ;
+			this.materials[parseInt(map_json.materials[i].material_id)] = material;
+		}
+		
+		var model;		
+		for (var i=0; i<map_json.models.length; i++) { 
+			var loader = new THREE.JSONLoader();	
+			model = loader.parse(JSON.parse(map_json.models[i].model_json));
+	
+			this.object_models[parseInt(map_json.models[i].object_id)] = model;
+		}
+		
+		var map_object;		
+		for (var i=0; i<map_json.map_objects.length; i++) { 
+			map_object = new mapObject(map_json.map_objects[i]);
+			this.map_objects[parseInt(map_json.map_objects[i].map_object_id)] = map_object;
 		}
 		
 		var tile;

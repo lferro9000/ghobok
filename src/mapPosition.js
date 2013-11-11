@@ -61,9 +61,9 @@ function mapPosition(stepsSouth, stepsEast, stepsUp, direction) {
 	}
 	
 	this.getWebGLPosition = function() {
-		var x = (party.position.stepsEast * TILE_SIZE);
-		var y = (party.position.stepsUp * TILE_SIZE) - 150;
-		var z = (party.position.stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;
+		var x = (this.stepsEast * TILE_SIZE);
+		var y = (this.stepsUp * TILE_SIZE) - 150;
+		var z = (this.stepsSouth * TILE_SIZE) - TILE_SIZE_HALF;
 		var rotationY = this.getDirectionInRads();
 		return new webGLPosition(x, y, z, 0, rotationY, 0);
 	}

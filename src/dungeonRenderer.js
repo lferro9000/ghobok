@@ -83,6 +83,11 @@ function dungeonRenderer($container) {
 			map.tiles[tileID].addToScene(this.scene, this.tileGeometry, map.materials) ;
 		}
 		
+		/* OBJECTS */
+		for(mapObjectID in map.map_objects) { 
+			map.map_objects[mapObjectID].addToScene(this.scene, map.object_models, map.materials) ;
+		}
+		
 		/* WEATHER EFFECTS */
 		for(weather_effect_id in map.weather_effects) { 
 			map.weather_effects[weather_effect_id].addToScene(this.scene);
@@ -97,27 +102,6 @@ function dungeonRenderer($container) {
 		this.syncWithPartyPosition(party);
 	}
 	
-	this.addMorph = function ( geometry, speed, duration, x, y, z ) {
-
-		var material2 = map.materials[1];
-		
-		var meshAnim = new THREE.MorphAnimMesh( geometry, material2 );
-
-		meshAnim.speed = speed;
-		meshAnim.duration = duration;
-		meshAnim.time = 600 * Math.random();
-
-		meshAnim.position.set( x, y, z );
-		meshAnim.rotation.y = DOUBLE_RIGHT_ANGLE;
-
-		meshAnim.castShadow = true;
-		meshAnim.receiveShadow = true;
-
-		meshAnim.scale.set( 1, 2, 2 );
-		
-		this.scene.add( meshAnim );
-	}
-			
 	this.syncWithPartyPosition = function () {
 		var pos = party.position.getWebGLPosition();
 		this.syncWebGLPosition(pos.x, pos.y, pos.z, pos.rotationX, pos.rotationY, pos.rotationZ);

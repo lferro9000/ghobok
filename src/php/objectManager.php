@@ -48,6 +48,7 @@
 		<title>Ghobok Object Manager</title>
 		<link href="editor.css" rel="stylesheet"/>
 		
+		<script src="src/lib/jquery.min.js"></script>
 		<script language="javascript">
 		
 			function onCategoryChange(catSel) {
@@ -116,21 +117,27 @@
 					
 					$result = mysql_query($query,$db) or die('Debile query:  '.$query);
 
+					
 					if(mysql_num_rows($result)) {
+					
 						while($object = mysql_fetch_object($result)) {
+							$object_json = json_encode($object);
 							echo "<tr><td><a href=\"ghobok.php?method=edit_object&object_id=" . $object->object_id . "\">Edit</a></td>";
 							echo "<td><a id=\"object" . $object->object_id ."\"></a>" . $object->object_name . "</td>";
 							
 							echo "<td>" . get_type_name($object->object_type) . "</td>";
 							echo "<td>" . $object->object_model . "</td>";
 							
-							echo "<td><input class=\"select-button\" type=\"button\" value=\"Select\" objectID=\"" . $object->object_id . "\" /></td>";
+							echo "<td><input class=\"select-button\" type=\"button\" value=\"Select\" objectID=\"" . $object->object_id . "\" /><span class=\"collapsed object_json\">$object_json</span></td>";
 							echo "</tr>";		
 						}
+						
+
 					}
 							
 					?>
-
+			
+					
 				</table>
 				
 			</div>

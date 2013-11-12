@@ -8,3 +8,7 @@ a {
 	color:Yellow;
 	font-weight:bold;
 }
+
+.collapsed {
+	display:none;
+}

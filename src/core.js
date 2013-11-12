@@ -18,6 +18,7 @@ function startLoadingMap (mapID) {
 }
 	
 function finishLoadingMap(map_json) {
+	//console.log("map loaded:"  + map_json);
 	map.loadMapFromJSON(map_json);
 	dr.renderDungeon();
 		
@@ -55,7 +56,8 @@ $( function () {
 	dr = new dungeonRenderer($container);
 	mouse = new mouseSelect();
 	map = new dungeonMap();
-	party = new adventurersParty(1, -10, 0, DIRECTION_WEST);
+	/* south, east, up */
+	party = new adventurersParty(16 ,-6 , -2, DIRECTION_NORTH);
 	hud = new ghobokHUD('#hud');
 	editor = new mapEditor();
 

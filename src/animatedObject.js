@@ -18,7 +18,7 @@ function animatedObject() {
 		var material = new THREE.MeshFaceMaterial( materials );
 		var android = new THREE.Mesh( geometry, material );
 		android.scale.set(2,2,2);
-		android.position.set (550,-280,1250);
+		android.position.set (-2500,-1500,8000);
 		android.rotation.y = DIRECTION_SOUTH_RADS;
 		android.castShadow = true;
 		dr.scene.add( android );

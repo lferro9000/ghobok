@@ -1,8 +1,5 @@
 function dungeonRenderer($container) {
 
-	this.NEAR = 1;
-	this.FAR = 50000;
-	
 	this.clock = new THREE.Clock();
 	
 	this.renderer = new THREE.WebGLRenderer();
@@ -20,7 +17,7 @@ function dungeonRenderer($container) {
 	
 	this.scene = new THREE.Scene();
 	
-	this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, this.ASPECT, this.NEAR, this.FAR );
+	this.camera = new THREE.PerspectiveCamera( VIEW_ANGLE, this.ASPECT, CAMERA_NEAR, CAMERA_FAR );
 		
 	this.scene.add(this.camera);	
 	
@@ -37,7 +34,7 @@ function dungeonRenderer($container) {
 		var imagePrefix = "images/sky/abovesea-";
 		var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
 		var imageSuffix = ".png";
-		var skyGeometry = new THREE.CubeGeometry( 50000, 50000, 50000 );	
+		var skyGeometry = new THREE.CubeGeometry( 55000, 55000, 55000 );	
 		var materialArray = [];
 		for (var i = 0; i < 6; i++)
 			materialArray.push( new THREE.MeshBasicMaterial({
@@ -51,32 +48,28 @@ function dungeonRenderer($container) {
 			
 		this.partyLight = new THREE.PointLight( 0xa0a0a0, 1, 5000 );
 		this.partyLight.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
-		this.scene.add(this.partyLight);
+		//this.scene.add(this.partyLight);
 		//this.scene.fog = new THREE.Fog( 0x000000, 1500, 3000 ) ;
 		
 		// SUN
 		light = new THREE.SpotLight( 0xffffff, 1, 0, Math.PI, 1 );
-		light.position.set( 0, 0, 0 );
-		light.target.position.set( 500, 0, 1000 );
+		light.position.set(-7500, 5000, 8000);
+		light.target.position.set( 0, 1000, 0 );
 		light.castShadow = true;
 		light.shadowCameraNear = 700;
 		light.shadowCameraFar = this.camera.far;
 		light.shadowCameraFov = 50;
 		light.shadowBias = 0.0001;
-		light.shadowDarkness = 0.5;
+		light.shadowDarkness = 0.8;
 		var SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 1024;
 		light.shadowMapWidth = SHADOW_MAP_WIDTH;
 		light.shadowMapHeight = SHADOW_MAP_HEIGHT;
 		this.scene.add( light );
-				
-		this.sun = new THREE.PointLight( 0xffffff, 1, 55500 );
-		this.sun.position.set(-20000, 25000, -20000);
-		//this.sun.castShadow = true;
-		//this.scene.add(this.sun);
 		
-		this.sun2 = new THREE.PointLight( 0xffffff, 1 , 55000);
+		
+		this.sun2 = new THREE.SpotLight( 0xfff0f0, 1, 0, - Math.PI, 1 );
 		this.sun2.position.set(20000, 25000, 20000);
-		//this.scene.add(this.sun2);
+		this.scene.add(this.sun2);
 		
 		/* TILES */
 		for(tileID in map.tiles) { 
@@ -85,12 +78,12 @@ function dungeonRenderer($container) {
 		
 		/* OBJECTS */
 		for(mapObjectID in map.map_objects) { 
-			map.map_objects[mapObjectID].addToScene(this.scene, map.object_models, map.materials) ;
+			map.map_objects[mapObjectID].addToScene(this.scene, map.objects, map.materials) ;
 		}
 		
 		/* WEATHER EFFECTS */
 		for(weather_effect_id in map.weather_effects) { 
-			map.weather_effects[weather_effect_id].addToScene(this.scene);
+			//map.weather_effects[weather_effect_id].addToScene(this.scene);
 		}
 		
 		/* HUD */
@@ -123,17 +116,18 @@ function dungeonRenderer($container) {
 	}
 	
 	this.animationFrame = function () {
+		var delta = this.clock.getDelta();
 		this.animated.animate();
 		
 		/* animate weather effects */
 		for(weather_effect_id in map.weather_effects) { 
-			map.weather_effects[weather_effect_id].animationFrame(this.clock);
+			map.weather_effects[weather_effect_id].animationFrame(delta);
 		}
 		
 		/* animate party movement */
 		if (this.webGLPositionDiff.anythingToMove) {
 			var newPosition = new webGLPosition(this.camera.position.x, this.camera.position.y, this.camera.position.z, this.camera.rotation.x, this.camera.rotation.y, this.camera.rotation.z);
-			newPosition.processMoveStep(this.requestedWebGLPosition);			
+			newPosition.processMoveStep(this.requestedWebGLPosition, delta);			
 			this.syncWebGLPosition(newPosition.x, newPosition.y, newPosition.z, newPosition.rotationX, newPosition.rotationY, newPosition.rotationZ);
 			this.webGLPositionDiff = new webGLPosition(this.camera.position.x - this.requestedWebGLPosition.x, this.camera.position.y - this.requestedWebGLPosition.y, this.camera.position.z - this.requestedWebGLPosition.z, 0, this.camera.rotation.y - this.requestedWebGLPosition.rotationY, 0);
 		}

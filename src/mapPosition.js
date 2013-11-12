@@ -112,17 +112,19 @@ function webGLPosition(x, y, z, rotationX, rotationY, rotationZ) {
 		return current;
 	}
 	
-	this.processMoveStep = function (requested) {
-		this.x = this.processTransition(this.x, requested.x, MOVEMENT_STEP);
-		this.y = this.processTransition(this.y, requested.y, MOVEMENT_STEP);
-		this.z = this.processTransition(this.z, requested.z, MOVEMENT_STEP);
-		this.rotationX = this.processTransition(this.rotationX, requested.rotationX, MOVEMENT_TURN);
+	this.processMoveStep = function (requested, delta) {
+		var step = delta * MOVEMENT_STEP;
+		var turn = delta * MOVEMENT_TURN;
+		this.x = this.processTransition(this.x, requested.x, step);
+		this.y = this.processTransition(this.y, requested.y, step);
+		this.z = this.processTransition(this.z, requested.z, step);
+		this.rotationX = this.processTransition(this.rotationX, requested.rotationX, turn);
 		if ((this.rotationY == DIRECTION_SOUTH_RADS) && (requested.rotationY == DIRECTION_EAST_RADS)) {
 			this.rotationY = - DIRECTION_SOUTH_RADS;
 		} else if ((this.rotationY == DIRECTION_EAST_RADS) && (requested.rotationY == DIRECTION_SOUTH_RADS)) {
 			this.rotationY = 3 * RIGHT_ANGLE;
 		}
-		this.rotationY = this.processTransition(this.rotationY, requested.rotationY, MOVEMENT_TURN);
-		this.rotationZ = this.processTransition(this.rotationZ, requested.rotationZ, MOVEMENT_TURN);		
+		this.rotationY = this.processTransition(this.rotationY, requested.rotationY, turn);
+		this.rotationZ = this.processTransition(this.rotationZ, requested.rotationZ, turn);		
 	}
 }

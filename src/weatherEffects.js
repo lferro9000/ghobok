@@ -22,15 +22,13 @@ function weatherEffect(effect_json) {
 		this.engine.positionBase = new THREE.Vector3( posX, posY, posZ );
 		this.engine.positionSpread = new THREE.Vector3( this.sizeEast * TILE_SIZE, 0, this.sizeSouth * TILE_SIZE );
 		this.engine.particlesPerSecond = this.intensity * 100;
-		this.engine.initialize(scene);
-		
+		this.engine.initialize(scene);		
 	}
 	
-	this.animationFrame = function (clock) {
-
-		var dt = clock.getDelta();
-		this.engine.update( dt * 0.5 );	
-
+	this.animationFrame = function (delta) {
+		if (this.engine) {			
+			this.engine.update( delta * 0.5 );	
+		}
 	}
 	
 }

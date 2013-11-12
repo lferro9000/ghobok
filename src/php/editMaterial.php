@@ -26,7 +26,7 @@
 		if (file_exists($_FILES['texture_image']["tmp_name"])) {
 			
 			$temp = explode(".", $_FILES["texture_image"]["name"]);
-			$file_name = $temp[0];
+			$file_name = substr($temp[0],0,15);
 			$file_ext = end($temp);
 			$texture_image = $file_name . "." . $file_ext;
 			$file_path = TEXTURE_IMAGES_PATH . $texture_image;

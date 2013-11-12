@@ -6,11 +6,11 @@
 	
 	/* MATERIALS */
 	$query = "SELECT DISTINCT m.material_id, m.texture_image
-				FROM materials m 
+				FROM materials m /*
 				LEFT OUTER JOIN tiles t ON ( t.material_id = m.material_id ) 
 				LEFT OUTER JOIN objects o ON ( o.material_id = m.material_id ) 
 				LEFT OUTER JOIN map_objects mo ON ( mo.object_id = o.object_id ) 
-				WHERE t.map_id = $mapID OR mo.map_id = $mapID;";
+				 WHERE t.map_id = $mapID OR mo.map_id = $mapID; */";
 	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
 	
 	$materials = array();
@@ -20,22 +20,22 @@
 		}
 	}
 	
-	/* OBJECT MODELS */
-	$query = "SELECT DISTINCT o.object_id, o.object_model FROM objects o	
+	/* OBJECTS */
+	$query = "SELECT DISTINCT o.* FROM objects o	/*
 				JOIN map_objects mo ON (o.object_id = mo.object_id)
-				WHERE mo.map_id = $mapID AND o.object_type = 0;";
+				 WHERE mo.map_id = $mapID; */ ";
 	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
 	
-	$models = array();
+	$objects = array();
 	if(mysql_num_rows($result)) {
-		while($model = mysql_fetch_object($result)) {
-			$model->model_json = file_get_contents("models/" . $model->object_model);
-			$models[] = $model;
+		while($object = mysql_fetch_object($result)) {
+			$object->model_json = file_get_contents("models/" . $object->object_model);
+			$objects[] = $object;
 		}
 	}
 	
 	/* MAP OBJECTS */
-	$query = "SELECT mo.*, o.material_id, o.object_type 
+	$query = "SELECT mo.* 
 				FROM map_objects mo 
 				JOIN objects o ON (o.object_id = mo.object_id)
 				WHERE map_id = $mapID;";
@@ -72,7 +72,7 @@
 	}
 		
 	header('Content-type: application/json');
-	echo json_encode(array('map_id'=>$mapID, 'materials'=>$materials, 'models'=>$models, 'map_objects'=>$map_objects, 'tiles'=>$tiles, 'weather_effects'=>$effects));
+	echo json_encode(array('map_id'=>$mapID, 'materials'=>$materials, 'objects'=>$objects, 'map_objects'=>$map_objects, 'tiles'=>$tiles, 'weather_effects'=>$effects));
 
 		
 ?>

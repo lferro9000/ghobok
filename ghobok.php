@@ -32,6 +32,9 @@ if (isset($method)) {
 		case 'save_map_object':
 			include (__DIR__.'/src/php/saveMapObject.php');
 			break;
+		case 'delete_map_object':
+			include (__DIR__.'/src/php/deleteMapObject.php');
+			break;
 		default:
 			die('Method '. $method . ' unknown.');
 	}

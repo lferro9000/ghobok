@@ -1,6 +1,6 @@
 function mapEditor () {
 	
-	this.tileDeleteEnabled = false;
+	this.eraser = false;
 	this.skywalker = false;
 	this.parameters = null;
 	this.gui = null;
@@ -14,7 +14,7 @@ function mapEditor () {
 	this.objectManager = null;
 	
 	this.reset = function () {
-		this.parameters = null;
+
 		if (this.gui) {
 			this.gui.destroy();
 			this.gui = false;
@@ -23,7 +23,8 @@ function mapEditor () {
 		
 		this.parameters = {
 			floatUp: function() { editor.skywalker = true;party.position.stepsUp += 1; dr.syncWithPartyPosition(); hud.refresh(); },
-			floatDown: function() { editor.skywalker = true;party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); }			
+			floatDown: function() { editor.skywalker = true;party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); },
+			eraseTiles: function() { editor.eraseTiles() }
 		};
 		
 		var folder0 = this.gui.addFolder('Float');
@@ -32,6 +33,9 @@ function mapEditor () {
 		folder0.add( this.parameters, 'floatDown' ).name("Down");
 		folder0.open();
 		
+		var folder1 = this.gui.addFolder('Eraser');
+		folder1.add( this.parameters, 'eraseTiles' ).name("Almighty eraser");
+		folder1.open();
 	}
 	
 	this.mainMenu = function () {
@@ -41,14 +45,13 @@ function mapEditor () {
 			materialManager: function() { editor.openMaterialManager() },
 			addTiles: function() { editor.addTiles() },
 			addObjects: function() { editor.addObjects() },
-			eraseTiles: function() { editor.eraseTiles() },
 			floatUp: function() { party.position.stepsUp += 1; dr.syncWithPartyPosition(); hud.refresh(); },
 			floatDown: function() { party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); }			
 		};
 		
 		var folder1 = this.gui.addFolder('Tiles');
 		folder1.add( this.parameters, 'addTiles' ).name("Dungeon drawing");
-		folder1.add( this.parameters, 'eraseTiles' ).name("Tile eraser");
+		
 		folder1.open();
 		
 		var folder2 = this.gui.addFolder('Objects');
@@ -125,18 +128,21 @@ function mapEditor () {
 	/* MAP OBJECTS */
 	this.addObjects = function () {
 		this.reset();
-				
+			
 		this.parameters = {
-			object_id: 0,
-			x:0,
+			map_object: new mapObject(),
 			selectObject: function() { editor.selectObject() },
 			insertObject: function() { editor.insertObject() },
 			cancel: function() { editor.mainMenu() },
 		};
+		this.parameters.map_object.position = party.position.clone();
 		var folder1 = this.gui.addFolder("Object drawing");
-		folder1.add( this.parameters, 'object_id').name('Object ID').listen();
+		folder1.add( this.parameters.map_object, 'objectID').name('Object ID').listen();
 		folder1.add( this.parameters, 'selectObject' ).name('Select object');
-		folder1.add( this.parameters, 'x' ).name('X').listen();
+		
+		folder1.add( this.parameters.map_object, 'positionX' ).name('X').min(-500).max(500).step(1).listen();
+		folder1.add( this.parameters.map_object, 'positionY' ).name('Y').min(-500).max(500).step(1).listen();
+		
 		folder1.add( this.parameters, 'insertObject' ).name('Save');
 		folder1.add( this.parameters, 'cancel' ).name('Cancel');
 		folder1.open();
@@ -145,15 +151,18 @@ function mapEditor () {
 	}
 	
 	this.insertObject = function () {
-		var tile = new dungeonTile();
-		tile.stepsSouth = party.position.stepsSouth;
-		tile.stepsEast = party.position.stepsEast;
-		tile.stepsUp = party.position.stepsUp;
-		tile.direction = party.position.direction;
-		tile.tileType = getTileTypeFromString(this.parameters.tileTypeStr);
-		tile.materialID = this.defaultMaterialID;
-		tile.addToScene(dr.scene, dr.tileGeometry, map.materials);
-		$.post("ghobok.php", { method: "save_map_object", map_id:map.mapID, object_json:tile.getJSON() }, function (data) { console.log("Tile inserted:" + data); } );
+		if (!this.parameters.map_object.mesh) {
+			this.parameters.map_object.addToScene(dr.scene, map.objects, map.materials);
+		} else {
+			this.parameters.map_object.update();
+		}
+		
+		$.post("ghobok.php", { method: "save_map_object", map_id:map.mapID, map_object_json:this.parameters.map_object.getJSON() }, function (data) { 
+			if (!editor.parameters.map_object.mapObjectID) {
+				editor.parameters.map_object.mapObjectID = parseInt(data);
+			}
+			console.log("Object inserted:" + data); 
+		} );
 	}
 	
 	this.openObjectManager = function() {
@@ -177,7 +186,16 @@ function mapEditor () {
 			$(".select-button", manager.contents()).each( 
 				function(i, e) {
 					$(e).click( function () {
-						editor.parameters.object_id = $(e).attr('objectID');
+						var object_id = $(e).attr('objectID');						
+						editor.parameters.map_object.objectID = object_id;
+						var object_json = JSON.parse($(".object_json",$(e).parent()).html());
+						editor.parameters.map_object.positionX = object_json.default_position_x;
+						editor.parameters.map_object.positionY = object_json.default_position_y;
+						editor.parameters.map_object.positionZ = object_json.default_position_z;
+						editor.parameters.map_object.rotationX = object_json.default_rotation_x;
+						editor.parameters.map_object.rotationY = object_json.default_rotation_y;
+						editor.parameters.map_object.rotationZ = object_json.default_rotation_z;
+						editor.parameters.map_object.scale = object_json.default_scale;
 						editor.closeObjectManager();
 					});
 				} 
@@ -189,11 +207,11 @@ function mapEditor () {
 	/* ERASER */
 	this.eraseTiles = function () {
 		this.reset();
-		this.tileDeleteEnabled = true;
+		this.eraser = true;
 		
 		this.parameters = {
 			cancel: function() { 
-				editor.tileDeleteEnabled = false;
+				editor.eraser = false;
 				editor.mainMenu(); 
 			},
 		};
@@ -210,6 +228,10 @@ function mapEditor () {
 		$.post("ghobok.php", { method: "delete_tile", tile_id:tile.tileID }, function (data) { console.log("Tile deleted:" + data); } );
 	}
 	
+	this.deleteMapObject = function(map_object) {
+		dr.scene.remove(map_object.mesh);
+		$.post("ghobok.php", { method: "delete_map_object", map_object_id:map_object.mapObjectID }, function (data) { console.log("Map object deleted:" + data); } );
+	}
 		
 	this.mainMenu();
 	

@@ -1,61 +1,73 @@
 function mapObject(map_object_json) {
 
 	this.mapObjectID = 0;	
+	this.objectID = 0;
+	this.scale = 1;
+	this.position = new mapPosition(0, 0, 0, DIRECTION_NORTH);
+	this.positionX = 0;
+	this.positionY = 0;
+	this.positionZ = 0;
+	this.rotationX = 0;
+	this.rotationY = 0;
+	this.rotationZ = 0;
 	
 	this.loadFromJSON = function(map_object_json) {
 		this.mapObjectID = parseInt(map_object_json.map_object_id);
 		this.objectID = parseInt(map_object_json.object_id);
-		this.materialID = parseInt(map_object_json.material_id);		
 		this.scale = parseInt(map_object_json.scale);
-		this.objectType = parseInt(map_object_json.object_type);
 		this.position = new mapPosition(parseInt(map_object_json.steps_south), parseInt(map_object_json.steps_east), parseInt(map_object_json.steps_up), DIRECTION_NORTH);
 		this.positionX = parseInt(map_object_json.position_x);
 		this.positionY = parseInt(map_object_json.position_y);
 		this.positionZ = parseInt(map_object_json.position_z);
 		this.rotationX = parseFloat(map_object_json.rotation_x);
 		this.rotationY = parseFloat(map_object_json.rotation_y);
-		this.rotationZ = parseFloat(map_object_json.rotation_z);		
+		this.rotationZ = parseFloat(map_object_json.rotation_z);	
 	}
 	
 	if (map_object_json) {
 		this.loadFromJSON(map_object_json);
 	}
 	
-	this.addToScene = function (scene, models, materials) {
+	this.changePosition = function() {
+		var meshPosition = this.position.getWebGLPosition();
+		this.mesh.position.set( meshPosition.x + parseInt(this.positionX), meshPosition.y + parseInt(this.positionY), meshPosition.z + parseInt(this.positionZ));
+		this.mesh.rotation.x = meshPosition.rotationX + parseFloat(this.rotationX);
+		this.mesh.rotation.y = meshPosition.rotationY + parseFloat(this.rotationY);
+		this.mesh.rotation.z = meshPosition.rotationY + parseFloat(this.rotationZ);		
+	}
+	
+	this.update = function() {
+		this.changePosition();
+		this.scale = parseFloat(this.scale);
+		this.mesh.scale.set( this.scale, this.scale, this.scale );
+	}
+	
+	this.addToScene = function (scene, objects, materials) {
 		
-		switch (this.objectType) {
+		var object = objects[parseInt(this.objectID)];
+		
+		switch (object.objectType) {
 		
 			case OBJECT_TYPE_MODEL:
 			
-				var model;
 				var geometry;
 				var material;
 				
-				if (models[this.objectID]) {
-					model = models[this.objectID];
-					if (model.geometry) {
-						geometry = model.geometry; 	
-					}
-					
-					if (model.materials) {
-						material = new THREE.MeshFaceMaterial( model.materials );
-					}
+				if (object.model.geometry) {
+					geometry = object.model.geometry; 	
 				}
 								
-				if (this.materialID > 0) {
-					material = materials[this.materialID];
+				if (object.materialID > 0) {
+					material = materials[object.materialID];
+				} else if (object.model.materials) {
+					material = new THREE.MeshFaceMaterial(object.model.materials );
 				}
 				
 				this.mesh = new THREE.Mesh( geometry, material);
-				var meshPosition = this.position.getWebGLPosition();
-				this.mesh.position.set( meshPosition.x + this.positionX, meshPosition.y + this.positionY, meshPosition.z + this.positionZ);
-				this.mesh.rotation.x = meshPosition.rotationX + this.rotationX;
-				this.mesh.rotation.y = meshPosition.rotationY + this.rotationY;
-				this.mesh.rotation.z = meshPosition.rotationY + this.rotationZ;
-				this.mesh.scale.set( this.scale, this.scale, this.scale );
-				this.mesh.receiveShadow = true;
+				this.update();
+				this.mesh.receiveShadow = false;
 				this.mesh.castShadow = true;
-				this.mesh.tile = this;
+				this.mesh.map_object = this;
 				scene.add(this.mesh);
 				
 				break;
@@ -65,9 +77,9 @@ function mapObject(map_object_json) {
 		
 		
 	}
-	
+
 	this.getJSON = function () {
-		return JSON.stringify( {tileID: this.tileID, stepsSouth:this.stepsSouth, stepsEast:this.stepsEast, stepsUp:this.stepsUp, direction:this.direction, tileType:this.tileType, materialID:this.materialID } )
+		return JSON.stringify( {map_object_id: this.mapObjectID, scale: this.scale, object_id : this.objectID, steps_south:this.position.stepsSouth, steps_east:this.position.stepsEast, steps_up:this.position.stepsUp, direction:this.direction, position_x: this.positionX,position_y: this.positionY, position_z: this.positionZ, rotation_x: this.rotationX, rotation_y: this.rotationY, rotation_z: this.rotationZ } )
 	}
 		
 }

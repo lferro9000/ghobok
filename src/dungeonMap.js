@@ -4,15 +4,17 @@ function dungeonMap() {
 	this.materials = new Array();
 	this.tiles = new Array();
 	this.map_objects = new Array();
-	this.object_models = new Array();
+	this.objects = new Array();
 	this.weather_effects = new Array();
 	
 	this.plan = new mapPlan();
 	
-	this.getMaterial = function (material_json) {
+	this.createMaterial = function (material_json) {
 		var texture = THREE.ImageUtils.loadTexture( "images/textures/" + material_json.texture_image );
 		return new THREE.MeshLambertMaterial( { color: 0xffffff, map: texture } );
 	}
+	
+	this.loader = new THREE.JSONLoader();
 	
 	this.loadMapFromJSON = function (map_json) {
 		
@@ -20,16 +22,15 @@ function dungeonMap() {
 		
 		var material;		
 		for (var i=0; i<map_json.materials.length; i++) { 
-			material = this.getMaterial(map_json.materials[i]);
+			material = this.createMaterial(map_json.materials[i]);
 			this.materials[parseInt(map_json.materials[i].material_id)] = material;
 		}
 		
-		var model;		
-		for (var i=0; i<map_json.models.length; i++) { 
-			var loader = new THREE.JSONLoader();	
-			model = loader.parse(JSON.parse(map_json.models[i].model_json));
-	
-			this.object_models[parseInt(map_json.models[i].object_id)] = model;
+		var object;		
+		for (var i=0; i<map_json.objects.length; i++) { 			
+			object = new ghobokObject();
+			object.loadFromJSON(this.loader, map_json.objects[i]);
+			this.objects[parseInt(map_json.objects[i].object_id)] = object;
 		}
 		
 		var map_object;		

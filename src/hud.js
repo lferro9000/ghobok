@@ -32,9 +32,11 @@ function ghobokHUD(container) {
 		this.WIDTH = this.container.width();
 		this.HEIGHT = $( window ).height();
 		
-		this.woman.position.set( 500, (this.HEIGHT - 130), 0 );			
-		this.man.position.set( 800, (this.HEIGHT - 130), 0 );		
-		this.info.position.set( 20, 20, 0 );				
+		if (this.woman) {
+			this.woman.position.set( 500, (this.HEIGHT - 130), 0 );			
+			this.man.position.set( 800, (this.HEIGHT - 130), 0 );		
+			this.info.position.set( 20, 20, 0 );				
+		}
 	}
 	
 	this.addToScene = function (scene) {

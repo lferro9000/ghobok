@@ -140,14 +140,31 @@ function mapEditor () {
 		folder1.add( this.parameters.map_object, 'objectID').name('Object ID').listen();
 		folder1.add( this.parameters, 'selectObject' ).name('Select object');
 		
-		folder1.add( this.parameters.map_object, 'positionX' ).name('X').min(-500).max(500).step(1).listen();
-		folder1.add( this.parameters.map_object, 'positionY' ).name('Y').min(-500).max(500).step(1).listen();
+		var controller1 = folder1.add( this.parameters.map_object, 'positionX' ).name('X').min(-500).max(500).step(1).listen();
 		
+		controller1.onChange(function(value) {
+			editor.updateEditedObject();
+		});
+		
+		var controller2 = folder1.add( this.parameters.map_object, 'positionY' ).name('Y').min(-500).max(500).step(1).listen();
+		
+		controller2.onChange(function(value) {
+			editor.updateEditedObject();
+		});
+
 		folder1.add( this.parameters, 'insertObject' ).name('Save');
 		folder1.add( this.parameters, 'cancel' ).name('Cancel');
 		folder1.open();
 		
 		this.gui.open();
+	}
+	
+	this.updateEditedObject = function() {
+		if (this.parameters.map_object) {
+			if (this.parameters.map_object.mesh) {
+				this.parameters.map_object.update();
+			}
+		}
 	}
 	
 	this.insertObject = function () {

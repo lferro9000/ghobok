@@ -7,7 +7,7 @@ function mouseSelect()
 						
 	this.animationFrame = function (camera, scene) {
 
-		if (editor.eraser) {
+		if (editor.eraser || editor.selecting) {
 			var vector = new THREE.Vector3( this.x, this.y, 1 );
 			this.projector.unprojectVector( vector, camera );
 			var ray = new THREE.Raycaster( camera.position, vector.sub( camera.position ).normalize() );
@@ -61,17 +61,22 @@ function mouseSelect()
 	
 	this.mouseDown = function () {	
 		
-		if ((editor.eraser) && (this.intersected))
-		{
-			if (this.intersected.object.tile) {
-				editor.deleteTile(this.intersected.object.tile);
-				this.clearSelection()
-			} else if (this.intersected.object.map_object) {
-				editor.deleteMapObject(this.intersected.object.map_object);
-				this.clearSelection()
-			}						
+		if (this.intersected) {
+			if (editor.eraser) {
+				if (this.intersected.object.tile) {
+					editor.deleteTile(this.intersected.object.tile);
+					this.clearSelection()
+				} else if (this.intersected.object.map_object) {
+					editor.deleteMapObject(this.intersected.object.map_object);
+					this.clearSelection()
+				}						
+			} else if (editor.selecting) {
+				if (this.intersected.object.map_object) {
+					editor.editMapObject(this.intersected.object.map_object);
+					this.clearSelection()
+				}						
+			}
 		}
-		
 	}
 	
 }

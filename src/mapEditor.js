@@ -2,6 +2,7 @@ function mapEditor () {
 	
 	this.eraser = false;
 	this.skywalker = false;
+	this.selecting = false;
 	this.parameters = null;
 	this.gui = null;
 	this.defaultMaterialID = 0;
@@ -22,8 +23,8 @@ function mapEditor () {
 		this.gui = new dat.GUI();
 		
 		this.parameters = {
-			floatUp: function() { editor.skywalker = true;party.position.stepsUp += 1; dr.syncWithPartyPosition(); hud.refresh(); },
-			floatDown: function() { editor.skywalker = true;party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); },
+			floatUp: function() { editor.skywalker = true;party.position.stepsUp += 1; dr.startMovingParty(); hud.refresh(); },
+			floatDown: function() { editor.skywalker = true;party.position.stepsUp -= 1; dr.startMovingParty(); hud.refresh(); },
 			eraseTiles: function() { editor.eraseTiles() }
 		};
 		
@@ -42,11 +43,9 @@ function mapEditor () {
 		this.reset();
 		
 		this.parameters = {
-			materialManager: function() { editor.openMaterialManager() },
 			addTiles: function() { editor.addTiles() },
-			addObjects: function() { editor.addObjects() },
-			floatUp: function() { party.position.stepsUp += 1; dr.syncWithPartyPosition(); hud.refresh(); },
-			floatDown: function() { party.position.stepsUp -= 1; dr.syncWithPartyPosition(); hud.refresh(); }			
+			addMapObject: function() { editor.addMapObject() },
+			selectMapObjects: function() { editor.selectMapObjects() },
 		};
 		
 		var folder1 = this.gui.addFolder('Tiles');
@@ -55,7 +54,8 @@ function mapEditor () {
 		folder1.open();
 		
 		var folder2 = this.gui.addFolder('Objects');
-		folder2.add( this.parameters, 'addObjects' ).name("Object drawing");
+		folder2.add( this.parameters, 'addMapObject' ).name("Object drawing");
+		folder2.add( this.parameters, 'selectMapObjects' ).name("Select");
 		folder2.open();
 		
 		this.gui.open();
@@ -126,59 +126,67 @@ function mapEditor () {
 	}
 	
 	/* MAP OBJECTS */
-	this.addObjects = function () {
+	this.addMapObject = function () {
 		this.reset();
-			
+		this.map_object = new mapObject();
+		this.map_object.position = party.position.clone();
+		this.openMapObjectEditor();
+	}
+	
+	this.editMapObject = function (map_object) {
+		this.selecting = false;
+		this.reset();
+		this.map_object = map_object;
+		this.openMapObjectEditor();
+	}
+	
+	this.openMapObjectEditor = function() {
+	
 		this.parameters = {
-			map_object: new mapObject(),
 			selectObject: function() { editor.selectObject() },
-			insertObject: function() { editor.insertObject() },
+			insertMapObject: function() { editor.insertMapObject() },
 			cancel: function() { editor.mainMenu() },
 		};
-		this.parameters.map_object.position = party.position.clone();
+		
 		var folder1 = this.gui.addFolder("Object drawing");
-		folder1.add( this.parameters.map_object, 'objectID').name('Object ID').listen();
+		folder1.add( this.map_object, 'objectID').name('Object ID').listen();
 		folder1.add( this.parameters, 'selectObject' ).name('Select object');
 		
-		var controller1 = folder1.add( this.parameters.map_object, 'positionX' ).name('X').min(-500).max(500).step(1).listen();
+		folder1.add( this.map_object, 'positionX' ).name('X').min(-500).max(500).step(1).listen().onChange(function(value) { editor.updateEditedMapObject(); });
+		folder1.add( this.map_object, 'positionY' ).name('Y').min(-500).max(500).step(1).listen().onChange(function(value) {	editor.updateEditedMapObject(); });
+		folder1.add( this.map_object, 'positionZ' ).name('Z').min(-500).max(500).step(1).listen().onChange(function(value) {	editor.updateEditedMapObject(); });
+		folder1.add( this.map_object, 'rotationX' ).name('Rotation X').min(- DOUBLE_RIGHT_ANGLE).max(DOUBLE_RIGHT_ANGLE).step(0.01).listen().onChange(function(value) { editor.updateEditedMapObject(); });
+		folder1.add( this.map_object, 'rotationY' ).name('Rotation Y').min(- DOUBLE_RIGHT_ANGLE).max(DOUBLE_RIGHT_ANGLE).step(0.01).listen().onChange(function(value) { editor.updateEditedMapObject(); });
+		folder1.add( this.map_object, 'rotationZ' ).name('Rotation Z').min(- DOUBLE_RIGHT_ANGLE).max(DOUBLE_RIGHT_ANGLE).step(0.01).listen().onChange(function(value) { editor.updateEditedMapObject(); });
+		folder1.add( this.map_object, 'scale' ).name('Scale').min(0.01).max(15).step(0.01).listen().onChange(function(value) { editor.updateEditedMapObject(); });
 		
-		controller1.onChange(function(value) {
-			editor.updateEditedObject();
-		});
-		
-		var controller2 = folder1.add( this.parameters.map_object, 'positionY' ).name('Y').min(-500).max(500).step(1).listen();
-		
-		controller2.onChange(function(value) {
-			editor.updateEditedObject();
-		});
-
-		folder1.add( this.parameters, 'insertObject' ).name('Save');
+		folder1.add( this.parameters, 'insertMapObject' ).name('Save');
 		folder1.add( this.parameters, 'cancel' ).name('Cancel');
 		folder1.open();
 		
 		this.gui.open();
 	}
 	
-	this.updateEditedObject = function() {
-		if (this.parameters.map_object) {
-			if (this.parameters.map_object.mesh) {
-				this.parameters.map_object.update();
+	this.updateEditedMapObject = function() {
+		if (this.map_object) {
+			if (this.map_object.mesh) {
+				this.map_object.update();
 			}
 		}
 	}
 	
-	this.insertObject = function () {
-		if (!this.parameters.map_object.mesh) {
-			this.parameters.map_object.addToScene(dr.scene, map.objects, map.materials);
+	this.insertMapObject = function () {
+		if (!this.map_object.mesh) {
+			this.map_object.addToScene(dr.scene, map.objects, map.materials);
 		} else {
-			this.parameters.map_object.update();
+			this.map_object.update();
 		}
 		
-		$.post("ghobok.php", { method: "save_map_object", map_id:map.mapID, map_object_json:this.parameters.map_object.getJSON() }, function (data) { 
-			if (!editor.parameters.map_object.mapObjectID) {
-				editor.parameters.map_object.mapObjectID = parseInt(data);
+		$.post("ghobok.php", { method: "save_map_object", map_id:map.mapID, map_object_json:this.map_object.getJSON() }, function (data) { 
+			if (!editor.map_object.mapObjectID) {
+				editor.map_object.mapObjectID = parseInt(data);
 			}
-			console.log("Object inserted:" + data); 
+			console.log("Save map object:" + data); 
 		} );
 	}
 	
@@ -197,6 +205,25 @@ function mapEditor () {
 		}
 	}
 	
+	this.selectMapObjects = function () {
+		this.reset();
+		this.selecting = true;
+		this.eraser = false;
+		
+		this.parameters = {
+			cancel: function() { 
+				editor.selecting = false;
+				editor.mainMenu(); 
+			},
+		};
+		
+		var folder1 = this.gui.addFolder('Select object to edit');
+		this.gui.add( this.parameters, 'cancel' ).name('Cancel');
+		folder1.open();
+
+		this.gui.open();
+	}
+	
 	this.selectObject = function() {
 		var manager = this.openObjectManager();
 		$(manager).load(function() {
@@ -204,15 +231,15 @@ function mapEditor () {
 				function(i, e) {
 					$(e).click( function () {
 						var object_id = $(e).attr('objectID');						
-						editor.parameters.map_object.objectID = object_id;
+						editor.map_object.objectID = object_id;
 						var object_json = JSON.parse($(".object_json",$(e).parent()).html());
-						editor.parameters.map_object.positionX = object_json.default_position_x;
-						editor.parameters.map_object.positionY = object_json.default_position_y;
-						editor.parameters.map_object.positionZ = object_json.default_position_z;
-						editor.parameters.map_object.rotationX = object_json.default_rotation_x;
-						editor.parameters.map_object.rotationY = object_json.default_rotation_y;
-						editor.parameters.map_object.rotationZ = object_json.default_rotation_z;
-						editor.parameters.map_object.scale = object_json.default_scale;
+						editor.map_object.positionX = object_json.default_position_x;
+						editor.map_object.positionY = object_json.default_position_y;
+						editor.map_object.positionZ = object_json.default_position_z;
+						editor.map_object.rotationX = object_json.default_rotation_x;
+						editor.map_object.rotationY = object_json.default_rotation_y;
+						editor.map_object.rotationZ = object_json.default_rotation_z;
+						editor.map_object.scale = object_json.default_scale;
 						editor.closeObjectManager();
 					});
 				} 
@@ -225,6 +252,7 @@ function mapEditor () {
 	this.eraseTiles = function () {
 		this.reset();
 		this.eraser = true;
+		this.selecting = false;
 		
 		this.parameters = {
 			cancel: function() { 

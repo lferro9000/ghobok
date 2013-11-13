@@ -17,7 +17,19 @@
 			echo (mysql_insert_id());
 		
 	} else {
-		echo('update');
+		$query = "UPDATE map_objects SET steps_up = " .$map_object->steps_up . ",
+		steps_east = " . $map_object->steps_east . ",
+		steps_south = " . $map_object->steps_south . ",
+		position_x = " . $map_object->position_x . ",
+		position_y = " . $map_object->position_y . ",
+		position_z = " . $map_object->position_z . ",
+		rotation_x = " . $map_object->rotation_x . ",
+		rotation_y = " . $map_object->rotation_y . ",
+		rotation_z = " . $map_object->rotation_z . ",
+		scale = " . $map_object->scale . "
+		WHERE map_object_id = " . $mapObjectID;
+		$result = mysql_query($query,$db) or die('Debile query:  '.$query);
+		echo('Updated object:' . $mapObjectID );
 	}
 
 ?>

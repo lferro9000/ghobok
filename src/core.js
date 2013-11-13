@@ -23,7 +23,7 @@ function finishLoadingMap(map_json) {
 	dr.renderDungeon();
 		
 	var loader2 = new THREE.JSONLoader();	
-	loader2.load( "models/gator.js?v=2", function( geometry, materials ) { dr.animated.addModelToScene(geometry, materials) });
+	loader2.load( "models/animals/gator.js?v=2", function( geometry, materials ) { dr.animated.addModelToScene(geometry, materials) });
 	
 	animationFrame();
 }

@@ -28,16 +28,16 @@ function mapObject(map_object_json) {
 		this.loadFromJSON(map_object_json);
 	}
 	
-	this.changePosition = function() {
+	this.updatePosition = function() {
 		var meshPosition = this.position.getWebGLPosition();
 		this.mesh.position.set( meshPosition.x + parseInt(this.positionX), meshPosition.y + parseInt(this.positionY), meshPosition.z + parseInt(this.positionZ));
 		this.mesh.rotation.x = meshPosition.rotationX + parseFloat(this.rotationX);
 		this.mesh.rotation.y = meshPosition.rotationY + parseFloat(this.rotationY);
-		this.mesh.rotation.z = meshPosition.rotationY + parseFloat(this.rotationZ);		
+		this.mesh.rotation.z = meshPosition.rotationZ + parseFloat(this.rotationZ);		
 	}
 	
 	this.update = function() {
-		this.changePosition();
+		this.updatePosition();
 		this.scale = parseFloat(this.scale);
 		this.mesh.scale.set( this.scale, this.scale, this.scale );
 	}

@@ -22,8 +22,8 @@ function finishLoadingMap(map_json) {
 	map.loadMapFromJSON(map_json);
 	dr.renderDungeon();
 		
-	var loader2 = new THREE.JSONLoader();	
-	loader2.load( "models/animals/gator.js?v=2", function( geometry, materials ) { dr.animated.addModelToScene(geometry, materials) });
+	//var loader2 = new THREE.JSONLoader();	
+	//loader2.load( "models/animals/gator.js?v=2", function( geometry, materials ) { dr.animated.addModelToScene(geometry, materials) });
 	
 	animationFrame();
 }
@@ -66,7 +66,7 @@ $( function () {
 	$container.bind( 'mousemove', OnDocumentMouseMove );
 	$container.bind( 'mousedown', OnDocumentMouseDown );
 		
-	startLoadingMap(1);	
+	startLoadingMap(2);	
 			
 });
 

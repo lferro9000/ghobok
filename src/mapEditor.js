@@ -208,7 +208,8 @@ function mapEditor () {
 						var object_id = $(e).attr('objectID');						
 						editor.map_object.objectID = object_id;
 						editor.map_object.position = party.position.clone();
-						editor.map_object.position.forward();						
+						editor.map_object.position.forward();	
+						editor.map_object.position.direction = 0;
 						var object_json = JSON.parse($(".object_json",$(e).parent()).html());
 						editor.map_object.positionX = parseInt(object_json.default_position_x);
 						editor.map_object.positionY = parseInt(object_json.default_position_y);
@@ -302,7 +303,8 @@ function mapEditor () {
 						editor.map_monster.monsterID = monster_id;
 						editor.map_monster.monster = map.monsters[monster_id];
 						editor.map_monster.position = party.position.clone();
-						editor.map_monster.position.forward();						
+						editor.map_monster.position.forward();
+						editor.map_monster.position.direction = 0;						
 						var monster_json = JSON.parse($(".monster_json",$(e).parent()).html());
 						editor.map_monster.scale = parseFloat(monster_json.default_scale);
 						editor.map_monster.addToScene(dr.scene);

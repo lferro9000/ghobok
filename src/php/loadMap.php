@@ -4,6 +4,13 @@
 	
 	$mapID = ghobok_get('map_id');
 	
+	$query = "SELECT * FROM maps WHERE map_id = $mapID";
+	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
+	
+	if(mysql_num_rows($result)) {
+		$map = mysql_fetch_assoc($result);
+	} else die("Map $mapID doesn't exist.");
+	
 	/* MATERIALS */
 	$query = "SELECT DISTINCT m.material_id, m.texture_image
 				FROM materials m; /*
@@ -96,7 +103,7 @@
 	}
 		
 	header('Content-type: application/json');
-	echo json_encode(array('map_id'=>$mapID, 'materials'=>$materials, 'objects'=>$objects, 'map_objects'=>$map_objects, 'monsters'=>$monsters, 'map_monsters'=>$map_monsters, 'tiles'=>$tiles, 'weather_effects'=>$effects));
+	echo json_encode(array('map'=>$map, 'materials'=>$materials, 'objects'=>$objects, 'map_objects'=>$map_objects, 'monsters'=>$monsters, 'map_monsters'=>$map_monsters, 'tiles'=>$tiles, 'weather_effects'=>$effects));
 
 		
 ?>

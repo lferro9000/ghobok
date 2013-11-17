@@ -10,7 +10,7 @@ function dungeonRenderer($container) {
 	this.renderer.physicallyBasedShading = true;
 	this.renderer.shadowMapCullFace = THREE.CullFaceBack;
 	this.renderer.shadowMapEnabled = true;
-	//this.renderer.shadowMapSoft = true;
+	this.renderer.shadowMapSoft = true;
 	
 	this.renderer.setSize(this.WIDTH, this.HEIGHT);
 	$container.append(this.renderer.domElement);
@@ -30,22 +30,6 @@ function dungeonRenderer($container) {
 	
 	this.renderDungeon = function () {
 				
-		//var imagePrefix = "images/sky/dawnmountain-";
-		var imagePrefix = "images/sky/abovesea-";
-		var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
-		var imageSuffix = ".png";
-		var skyGeometry = new THREE.CubeGeometry( 55000, 55000, 55000 );	
-		var materialArray = [];
-		for (var i = 0; i < 6; i++)
-			materialArray.push( new THREE.MeshBasicMaterial({
-				map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
-				side: THREE.BackSide
-			}));
-		var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-		var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-		skyBox.position.y = 0;
-		this.scene.add( skyBox );
-			
 		this.partyLight = new THREE.PointLight( 0xa0a0a0, 1, 5000 );
 		this.partyLight.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
 		//this.scene.add(this.partyLight);
@@ -66,10 +50,12 @@ function dungeonRenderer($container) {
 		light.shadowMapHeight = SHADOW_MAP_HEIGHT;
 		this.scene.add( light );
 		
-		
 		this.sun2 = new THREE.SpotLight( 0xfff0f0, 1, 0, - Math.PI, 1 );
 		this.sun2.position.set(20000, 25000, 20000);
 		this.scene.add(this.sun2);
+		
+		/* SKYBOX */
+		map.addSkyBoxToScene( this.scene );
 		
 		/* TILES */
 		for(tileID in map.tiles) { 
@@ -94,7 +80,7 @@ function dungeonRenderer($container) {
 		/* HUD */
 		hud.addToScene(this.scene);
 		
-		this.animated = new animatedObject();
+		//this.animated = new animatedObject();
 		
 		/* MOVE CAMERA TO PARTY POSITION */
 		this.syncWithPartyPosition(party);
@@ -105,6 +91,7 @@ function dungeonRenderer($container) {
 		this.syncWebGLPosition(pos.x, pos.y, pos.z, pos.rotationX, pos.rotationY, pos.rotationZ);
 		this.requestedWebGLPosition = pos;
 		this.webGLPositionDiff = new webGLPosition(0,0,0,0,0,0,0);
+		map.syncSkyBoxPosition(pos.x, pos.y, pos.z);
 	}
 	
 	this.syncWebGLPosition = function (x, y, z, rotationX, rotationY, rotationZ) {
@@ -124,7 +111,7 @@ function dungeonRenderer($container) {
 		var delta = this.clock.getDelta();
 		var delta_anim = 1000 * delta;
 		
-		this.animated.animate();
+		//this.animated.animate();
 		
 		/* animate monsters */		
 		for(map_monster_id in map.map_monsters) { 
@@ -148,6 +135,7 @@ function dungeonRenderer($container) {
 			newPosition.processMoveStep(this.requestedWebGLPosition, delta);			
 			this.syncWebGLPosition(newPosition.x, newPosition.y, newPosition.z, newPosition.rotationX, newPosition.rotationY, newPosition.rotationZ);
 			this.webGLPositionDiff = new webGLPosition(this.camera.position.x - this.requestedWebGLPosition.x, this.camera.position.y - this.requestedWebGLPosition.y, this.camera.position.z - this.requestedWebGLPosition.z, 0, this.camera.rotation.y - this.requestedWebGLPosition.rotationY, 0);
+			map.syncSkyBoxPosition(newPosition.x, newPosition.y, newPosition.z);			
 		}
 		
 		this.renderer.render( this.scene, this.camera );

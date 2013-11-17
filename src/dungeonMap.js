@@ -23,7 +23,9 @@ function dungeonMap() {
 	
 	this.loadMapFromJSON = function (map_json) {
 		
-		this.mapID = map_json.map_id;
+		this.mapID = map_json.map.map_id;
+		this.mapName = map_json.map.map_name;
+		this.skyboxImage = map_json.map.skybox;
 		
 		var material;		
 		for (var i=0; i<map_json.materials.length; i++) { 
@@ -73,7 +75,31 @@ function dungeonMap() {
 			effect = new weatherEffect(map_json.weather_effects[i]);
 			this.weather_effects[effect.weatherEffectID] = effect;
 		}
-	}		
+	}
+
+	this.addSkyBoxToScene = function (scene) {
+	
+		var imagePrefix = "images/sky/" + this.skyboxImage + "-";
+		var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
+		var imageSuffix = ".png";
+		var skyGeometry = new THREE.CubeGeometry( 55000, 55000, 55000 );	
+		var materialArray = [];
+		for (var i = 0; i < 6; i++)
+			materialArray.push( new THREE.MeshBasicMaterial({
+				map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
+				side: THREE.BackSide
+			}));
+		var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+		this.skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+
+		scene.add( this.skyBox );
+	}
+	
+	this.syncSkyBoxPosition = function (x, y, z) {
+		map.skyBox.position.x = x;
+		map.skyBox.position.y = y;
+		map.skyBox.position.z = z;
+	}
 }
 
 

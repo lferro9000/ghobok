@@ -11,7 +11,7 @@
 	$default_scale = 1;
 	$object_category_id = 1;
 	$default_position_x = 0;
-	$default_position_y = -300;
+	$default_position_y = -150;
 	$default_position_z = 0;
 	$default_rotation_x = 0;
 	$default_rotation_y = 0;
@@ -167,6 +167,7 @@
 						<select name="object_type">
 							<option value="0">static model</option>
 							<option value="1">fire</option>
+							<option value="2">animated model</option>
 						</select>
 					</td>
 					

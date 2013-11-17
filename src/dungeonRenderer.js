@@ -81,6 +81,11 @@ function dungeonRenderer($container) {
 			map.map_objects[mapObjectID].addToScene(this.scene, map.objects, map.materials) ;
 		}
 		
+		/* MONSTERS */		
+		for(map_monster_id in map.map_monsters) { 
+			map.map_monsters[map_monster_id].addToScene(this.scene);
+		}
+		
 		/* WEATHER EFFECTS */
 		for(weather_effect_id in map.weather_effects) { 
 			//map.weather_effects[weather_effect_id].addToScene(this.scene);
@@ -117,7 +122,20 @@ function dungeonRenderer($container) {
 	
 	this.animationFrame = function () {
 		var delta = this.clock.getDelta();
+		var delta_anim = 1000 * delta;
+		
 		this.animated.animate();
+		
+		/* animate monsters */		
+		for(map_monster_id in map.map_monsters) { 
+			map.map_monsters[map_monster_id].animationFrame(delta_anim);
+		}
+			
+		/* animate objects */
+		for(var i = 0, il = map.animated_objects.length; i < il; i++) { 
+			map.animated_objects[i].mesh.updateAnimation(delta_anim);
+			map.animated_objects[i].mesh.position.z++;
+		}
 		
 		/* animate weather effects */
 		for(weather_effect_id in map.weather_effects) { 

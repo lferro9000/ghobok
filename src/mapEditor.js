@@ -42,6 +42,7 @@ function mapEditor () {
 		folder1.add( this, 'eraseTiles' ).name("Almighty eraser");
 		folder1.add( this, 'addTiles' ).name("Draw tiles");
 		folder1.add( this, 'addMapObject' ).name("Add object");
+		folder1.add( this, 'addMapMonster' ).name("Add monster");
 		folder1.add( this, 'selectMapObjects' ).name("Select");		
 		folder1.open();
 		
@@ -225,6 +226,94 @@ function mapEditor () {
 		
 	}
 	
+	/* MAP MONSTERS */
+	this.addMapMonster = function () {
+		this.reset();
+		this.map_monster = new mapMonster();		
+		this.openMapMonsterEditor();
+	}
+	
+	this.editMapMonster = function (map_monster) {
+		this.selecting = false;
+		this.reset();
+		this.map_monster = map_monster;
+		this.openMapMonsterEditor();
+	}
+	
+	this.openMapMonsterEditor = function() {
+	
+		var folder1 = this.gui.addFolder("Add monster");
+		folder1.add( this.map_monster, 'monsterID').name('Monster ID').listen();
+		folder1.add( this, 'selectMonster' ).name('Select monster');
+		
+		folder1.add( this.map_monster, 'scale' ).name('Scale').min(0.01).max(15).step(0.01).listen().onChange(function(value) { editor.updateEditedMapMonster(); });
+		
+		folder1.add( this, 'saveMapMonster' ).name('Save');
+		folder1.add( this, 'mainMenu' ).name('Cancel');
+		folder1.open();
+		
+		this.gui.open();
+	}
+	
+	this.updateEditedMapMonster = function() {
+		if (this.map_monster) {
+			this.map_monster.update();
+		}
+	}
+	
+	this.saveMapMonster = function () {
+		if (!this.map_monster.mesh) {
+			this.map_monster.addToScene(dr.scene);
+		} else {
+			this.map_monster.update();
+		}
+		
+		$.post("ghobok.php", { method: "save_map_monster", map_id:map.mapID, map_monster_json:this.map_monster.getJSON() }, function (data) { 
+			if (!editor.map_monster.mapMonsterID) {
+				editor.map_monster.mapMonsterID = parseInt(data);
+			}
+			console.log("Save map monster:" + data); 
+		} );
+		this.mainMenu();
+	}
+	
+	this.openMonsterManager = function() {
+		if (!(this.monsterManager)) {
+			this.monsterManager = $('<iframe id="material-manager" >').appendTo('body');
+			return this.monsterManager.attr('src', 'ghobok.php?method=monster_manager');
+		} else {
+			return this.monsterManager.toggle();		
+		}
+	}
+	
+	this.closeMonsterManager = function() {
+		if (this.monsterManager) {
+			this.monsterManager.hide();
+		}
+	}
+	
+	this.selectMonster = function() {
+		var manager = this.openMonsterManager();
+		$(manager).load(function() {
+			$(".select-button", manager.contents()).each( 
+				function(i, e) {
+					$(e).click( function () {
+						var monster_id = parseInt($(e).attr('monsterID'));						
+						editor.map_monster.monsterID = monster_id;
+						editor.map_monster.monster = map.monsters[monster_id];
+						editor.map_monster.position = party.position.clone();
+						editor.map_monster.position.forward();						
+						var monster_json = JSON.parse($(".monster_json",$(e).parent()).html());
+						editor.map_monster.scale = parseFloat(monster_json.default_scale);
+						editor.map_monster.addToScene(dr.scene);
+						editor.closeMonsterManager();
+					});
+				} 
+			);
+		});
+		
+	}
+	
 	/* ERASER */
 	this.eraseTiles = function () {
 		this.reset();
@@ -238,7 +327,7 @@ function mapEditor () {
 			},
 		};
 		
-		var folder1 = this.gui.addFolder('Erasing tiles');
+		var folder1 = this.gui.addFolder('Erasing everything');
 		this.gui.add( this.parameters, 'cancel' ).name('Cancel');
 		folder1.open();
 

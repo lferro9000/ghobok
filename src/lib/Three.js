@@ -9015,10 +9015,14 @@ THREE.Geometry.prototype = {
 
 			var uv = uvs[ i ], uvCopy = [];
 
-			for ( var j = 0, jl = uv.length; j < jl; j ++ ) {
+			if (uv) {
+							
+				for ( var j = 0, jl = uv.length; j < jl; j ++ ) {
 
-				uvCopy.push( new THREE.Vector2( uv[ j ].x, uv[ j ].y ) );
+					uvCopy.push( new THREE.Vector2( uv[ j ].x, uv[ j ].y ) );
 
+				}
+				
 			}
 
 			geometry.faceVertexUvs[ 0 ].push( uvCopy );

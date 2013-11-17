@@ -17,6 +17,7 @@ function ghobokObject(object_json) {
 		if (object_json.model_json) {
 			this.model = loader.parse(JSON.parse(object_json.model_json));
 		}
+		
 	}
 	
 	if (object_json) {

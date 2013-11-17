@@ -1,5 +1,7 @@
 function weatherEffect(effect_json) {
 	
+	this.weatherEffectID = effect_json.weather_effect_id;
+	
 	this.effectType = effect_json.effect_type;
 	
 	this.stepsEast = parseInt(effect_json.steps_east);

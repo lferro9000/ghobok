@@ -6,7 +6,7 @@
 	
 	/* MATERIALS */
 	$query = "SELECT DISTINCT m.material_id, m.texture_image
-				FROM materials m /*
+				FROM materials m; /*
 				LEFT OUTER JOIN tiles t ON ( t.material_id = m.material_id ) 
 				LEFT OUTER JOIN objects o ON ( o.material_id = m.material_id ) 
 				LEFT OUTER JOIN map_objects mo ON ( mo.object_id = o.object_id ) 
@@ -37,14 +37,38 @@
 	/* MAP OBJECTS */
 	$query = "SELECT mo.* 
 				FROM map_objects mo 
-				JOIN objects o ON (o.object_id = mo.object_id)
-				WHERE map_id = $mapID;";
+				WHERE mo.map_id = $mapID;";
 	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
 	
 	$map_objects = array();
 	if(mysql_num_rows($result)) {
 		while($map_object = mysql_fetch_assoc($result)) {
 			$map_objects[] = $map_object;
+		}
+	}
+	
+	/* MONSTERS */
+	$query = "SELECT DISTINCT m.* FROM monsters m ;";
+	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
+	
+	$monsters = array();
+	if(mysql_num_rows($result)) {
+		while($monster = mysql_fetch_object($result)) {
+			$monster->model_json = file_get_contents("models/" . $monster->object_model);
+			$monsters[] = $monster;
+		}
+	}
+	
+	/* MAP MONSTERS */
+	$query = "SELECT mm.* 
+				FROM map_monsters mm 
+				WHERE mm.map_id = $mapID;";
+	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
+	
+	$map_monsters = array();
+	if(mysql_num_rows($result)) {
+		while($map_monster = mysql_fetch_assoc($result)) {
+			$map_monsters[] = $map_monster;
 		}
 	}
 	
@@ -72,7 +96,7 @@
 	}
 		
 	header('Content-type: application/json');
-	echo json_encode(array('map_id'=>$mapID, 'materials'=>$materials, 'objects'=>$objects, 'map_objects'=>$map_objects, 'tiles'=>$tiles, 'weather_effects'=>$effects));
+	echo json_encode(array('map_id'=>$mapID, 'materials'=>$materials, 'objects'=>$objects, 'map_objects'=>$map_objects, 'monsters'=>$monsters, 'map_monsters'=>$map_monsters, 'tiles'=>$tiles, 'weather_effects'=>$effects));
 
 		
 ?>

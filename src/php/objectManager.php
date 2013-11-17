@@ -37,6 +37,9 @@
 			case 1:
 				return "fire";
 				break;			
+			case 2:
+				return "animated model";
+				break;		
 		}
 	}
 			
@@ -64,7 +67,7 @@
 
 		<form method="post">
 		
-			<input type="hidden" name="method" value="material_manager" />
+			<input type="hidden" name="method" value="object_manager" />
 		
 			<div id="material-manager-menu">
 

@@ -243,15 +243,15 @@
 
 			function addMorph( geometry, speed, duration, x, y, z, fudgeColor ) {
 
-				var material = new THREE.MeshLambertMaterial( { color: 0xffaa55, morphTargets: true, vertexColors: THREE.FaceColors } );
-
+				var material = new THREE.MeshLambertMaterial( { color: 0xffaa55, morphTargets: true } );
+/*
 				if ( fudgeColor ) {
 
 					material.color.offsetHSL( 0, Math.random() * 0.5 - 0.25, Math.random() * 0.5 - 0.25 );
 					material.ambient = material.color;
 
 				}
-
+*/
 				var meshAnim = new THREE.MorphAnimMesh( geometry, material );
 
 				meshAnim.speed = speed;
@@ -288,9 +288,9 @@
 
 			var loader = new THREE.JSONLoader();
 
-			loader.load( "models/horse.js", function( geometry ) {
+			loader.load( "models/animals/horse.js", function( geometry ) {
 
-				morphColorsToFaceColors( geometry );
+				//morphColorsToFaceColors( geometry );
 
 				addMorph( geometry, 550, 1000, 100 - Math.random() * 1000, FLOOR, 300, true );
 				addMorph( geometry, 550, 1000, 100 - Math.random() * 1000, FLOOR, 450, true );

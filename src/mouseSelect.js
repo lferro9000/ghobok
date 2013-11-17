@@ -4,7 +4,8 @@ function mouseSelect()
 	this.y = 0;
 	this.projector = new THREE.Projector();
 	this.intersected = null;
-						
+	this.intersectedID = 0;
+	
 	this.animationFrame = function (camera, scene) {
 
 		if (editor.eraser || editor.selecting) {
@@ -17,12 +18,13 @@ function mouseSelect()
 			if ( intersects.length > 0 )
 			{
 
-				if ( ( intersects[ 0 ] != this.intersected ) && ( intersects[ 0 ].object != this.moonGlow ) )
+				if ( ( intersects[ 0 ].object.id != this.intersectedID ) && ( intersects[ 0 ].object != this.moonGlow ) )
 				{
 
 					if ( this.intersected ) this.clearSelection();
 					
 					this.intersected = intersects[ 0 ];
+					this.intersectedID = this.intersected.object.id;
 					
 					if (this.intersected && (this.intersected.object.tile || this.intersected.object.map_object)) {
 			

@@ -9,6 +9,7 @@
 	$object_type = 0;
 	$object_model = "";
 	$default_scale = 1;
+	$material_id = 0;
 	$object_category_id = 1;
 	$default_position_x = 0;
 	$default_position_y = -150;
@@ -28,6 +29,7 @@
 			$object_type = $object->object_type;
 			$object_model = $object->object_model;
 			$default_scale = $object->default_scale;
+			$material_id = $object->material_id;
 			$object_category_id = $object->object_category_id;		
 			$default_position_x = $object->default_position_x;
 			$default_position_y = $object->default_position_y;
@@ -46,6 +48,7 @@
 		$object_type = ghobok_get('object_type');
 		$object_model = ghobok_get('object_model');
 		$default_scale = ghobok_get('default_scale');
+		$material_id = ghobok_get('material_id');
 		$object_category_id = ghobok_get('object_category_id');
 		$default_position_x = ghobok_get('default_position_x');
 		$default_position_y = ghobok_get('default_position_y');
@@ -65,6 +68,7 @@
 							object_type=$object_type,
 							object_model='$object_model',
 							default_scale=$default_scale,
+							material_id=$material_id,
 							default_position_x=$default_position_x,
 							default_position_y=$default_position_y,
 							default_position_z=$default_position_z,
@@ -76,8 +80,8 @@
 				
 				mysql_query($query,$db) or die('Debile query:  '.$query);
 			} else {
-				$query = "INSERT INTO objects (object_type, object_model, default_scale, default_position_x, default_position_y, default_position_z, default_rotation_x, default_rotation_y, default_rotation_z, object_name, object_category_id) 
-							VALUES ($object_type, '$object_model', $default_scale, $default_position_x, $default_position_y, $default_position_z, $default_rotation_x, $default_rotation_y, $default_rotation_z, '$object_name', $object_category_id);";
+				$query = "INSERT INTO objects (object_type, object_model, default_scale, material_id, default_position_x, default_position_y, default_position_z, default_rotation_x, default_rotation_y, default_rotation_z, object_name, object_category_id) 
+							VALUES ($object_type, '$object_model', $default_scale, $material_id, $default_position_x, $default_position_y, $default_position_z, $default_rotation_x, $default_rotation_y, $default_rotation_z, '$object_name', $object_category_id);";
 				mysql_query($query,$db) or die('Debile query:  '.$query);
 				$object_id = mysql_insert_id();
 			}
@@ -186,6 +190,14 @@
 					<td>Scale:</td>
 					
 					<td><input type="text" name="default_scale" value="<?php echo $default_scale ?>"/></td>
+					
+				</tr>
+				
+				<tr>
+				
+					<td>Material:</td>
+					
+					<td><input type="text" name="material_id" value="<?php echo $material_id ?>"/></td>
 					
 				</tr>
 				

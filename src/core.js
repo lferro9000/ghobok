@@ -57,7 +57,7 @@ $( function () {
 	mouse = new mouseSelect();
 	map = new dungeonMap();
 	/* south, east, up */
-	party = new adventurersParty(16 ,-3 , -2, DIRECTION_WEST);
+	party = new adventurersParty(2 ,-5 , 0, DIRECTION_WEST);
 	hud = new ghobokHUD('#hud');
 	editor = new mapEditor();
 
@@ -66,7 +66,7 @@ $( function () {
 	$container.bind( 'mousemove', OnDocumentMouseMove );
 	$container.bind( 'mousedown', OnDocumentMouseDown );
 		
-	startLoadingMap(2);	
+	startLoadingMap(1);	
 			
 });
 

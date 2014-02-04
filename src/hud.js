@@ -1,14 +1,19 @@
-function ghobokHUD(container) {
-	this.container = $(container);
+function ghobokHUD( params ) {
 
-	this.refresh = function () {
-		var html = "<p class=\"hud-text\">";
-		html += "Up: <b>" + party.position.stepsUp + "</b><br/>";
-		html += "South: <b>" + party.position.stepsSouth + "</b><br/>";
-		html += "East: <b>" + party.position.stepsEast + "</b><br/>";
-		html += "Direction: <b>" + this.getDirectionName(party.position.direction) + "</b><br/>";
-		html += "</p>";
-		this.container.html( html );
+	this.container = _coalesce(params.container,$("#hud"));
+	this.scale = _coalesce(params.scale, 100);
+	this.characterSlots = new Array();
+	
+	this.addCharacterSlot = function( params ) {		
+		var slot = new characterSlot( this, params.character );		
+		this.characterSlots.push( slot );
+		slot.update();
+	}
+
+	this.update = function () {
+		for (var i = 0, max = this.characterSlots.length; i < max; i++) {
+			this.characterSlots[i].update();
+		}
 	}
 	
 	this.getDirectionName = function (direction) {
@@ -28,40 +33,41 @@ function ghobokHUD(container) {
 		}
 	}
 
-	this.windowResized = function() {
-		this.WIDTH = this.container.width();
-		this.HEIGHT = $( window ).height();
+	this.windowResized = function( width, height ) {		
+		this.container.css( {width:width+"px", height:height+"px"});
 		
-		if (this.woman) {
-			this.woman.position.set( 500, (this.HEIGHT - 130), 0 );			
-			this.man.position.set( 800, (this.HEIGHT - 130), 0 );		
-			this.info.position.set( 20, 20, 0 );				
+		this.scale = Math.round(width/26);		
+		var margin = Math.round(this.scale/7);
+		var chSlotHeightPX = (this.scale * _golden * 2) + (2 * margin);
+		var chSlotWidthPX = (this.scale * 4) + (2 * margin);
+		var topPX = height - chSlotHeightPX;
+		var leftPX;
+		for (var i = 0, max = this.characterSlots.length; i < max; i++) {			
+			leftPX = i * chSlotWidthPX;
+			this.characterSlots[i].container.css( { top:topPX+"px", left:leftPX+"px", width:chSlotWidthPX+"px", height:chSlotHeightPX+"px" } );
+			this.characterSlots[i].resize( this.scale, this.scale * _golden, margin );
 		}
 	}
 	
-	this.addToScene = function (scene) {
-		
-		var mapA = THREE.ImageUtils.loadTexture( "images/characters/gibri-woman.png");
-		
-		var materialA = new THREE.SpriteMaterial( { map: mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 1 } );
-		this.woman = new THREE.Sprite( materialA );	
-		this.woman.scale.set( 100, 130, 1 );		
-		scene.add( this.woman );
-		
-		mapA = THREE.ImageUtils.loadTexture( "images/characters/gibri-man.png");
-		materialA = new THREE.SpriteMaterial( { map: mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 1 } );
-		this.man = new THREE.Sprite( materialA );
-		this.man.scale.set( 100, 130, 1 );		
-		scene.add( this.man );
-		
-		mapA = THREE.ImageUtils.loadTexture( "images/sprite0.png");
-		var materialA = new THREE.SpriteMaterial( { map: mapA, alignment: THREE.SpriteAlignment.topLeft, opacity: 0.25 } );
-		this.info = new THREE.Sprite( materialA );	
-		this.info.scale.set( 150, 150, 1 );		
-		scene.add( this.info );
+}
 
-		this.windowResized();
-	}
-	
-	this.refresh();
+function characterSlot( hud, character ) {	
+	this.hud = hud;
+	this.container = $("#characterslot-template",hud.container).clone();
+	hud.container.append( this.container );
+	this.character = character;
+}
+
+characterSlot.prototype.update = function() {
+	if (this.character) {
+		$(".character-portrait",this.container).css( {background:"url('" + this.character.portrait + "')"} 	);
+		$(".character-name",this.container).html( this.character.name );
+	}	
+}
+
+characterSlot.prototype.resize = function( width, height, margin) {
+	if (this.character) {
+		//$(".character-portrait-wrapper",this.container).css( { } );
+		$(".character-portrait",this.container).css( {backgroundSize: "" + width+"px " + height+"px",width:width+"px", height:height+"px", top:margin+"px", left:margin+"px"});
+	}	
 }

@@ -1,0 +1,17 @@
+#hud {
+	font-family:'LusitanaRegular',"Palatino Linotype",Palatino,"Hoefler Text","Book Antiqua",Georgia,serif;
+}
+
+.character-name {
+	font-weight:bold;
+	color:#FFFFFF;
+}
+
+.characterslot {
+	position:absolute;
+	background:url('images/hud/hud_background.jpg');
+}
+
+.characterslot div{
+	position:absolute;
+}

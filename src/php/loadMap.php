@@ -55,6 +55,7 @@
 	}
 	
 	/* MONSTERS */
+        /*
 	$query = "SELECT DISTINCT m.* FROM monsters m ;";
 	$result = mysql_query($query,$db) or die('Debile query:  '.$query);
 	
@@ -65,8 +66,9 @@
 			$monsters[] = $monster;
 		}
 	}
-	
+	*/
 	/* MAP MONSTERS */
+        /*
 	$query = "SELECT mm.* 
 				FROM map_monsters mm 
 				WHERE mm.map_id = $mapID;";
@@ -78,7 +80,7 @@
 			$map_monsters[] = $map_monster;
 		}
 	}
-	
+	*/
 	/* TILES */
 	$query = "SELECT tile_id, steps_south, steps_east, steps_up, direction, tile_type, material_id 
 				FROM tiles WHERE map_id = $mapID";
@@ -103,7 +105,7 @@
 	}
 		
 	header('Content-type: application/json');
-	echo json_encode(array('map'=>$map, 'materials'=>$materials, 'objects'=>$objects, 'map_objects'=>$map_objects, 'monsters'=>$monsters, 'map_monsters'=>$map_monsters, 'tiles'=>$tiles, 'weather_effects'=>$effects));
+	echo json_encode(array('map'=>$map, 'materials'=>$materials, 'objects'=>$objects, 'map_objects'=>$map_objects, /* 'monsters'=>$monsters, 'map_monsters'=>$map_monsters,*/ 'tiles'=>$tiles, 'weather_effects'=>$effects));
 
 		
 ?>

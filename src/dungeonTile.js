@@ -26,7 +26,7 @@ function dungeonTile(tile_json) {
 		this.mesh.receiveShadow = true;
 		this.mesh.castShadow = true;
 		
-		//mesh.material.side = THREE.DoubleSide;
+		this.mesh.material.side = THREE.DoubleSide;
 
 		this.mesh.tile = this;
 		

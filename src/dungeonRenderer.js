@@ -31,15 +31,17 @@ function dungeonRenderer($container) {
 	this.renderDungeon = function () {
 				
 		this.partyLight = new THREE.PointLight( 0xa0a0a0, 1, 5000 );
-		this.partyLight.position.set(this.camera.position.x, this.camera.position.y, this.camera.position.z);
-		//this.scene.add(this.partyLight);
+		this.partyLight.position = this.camera.position;
+		this.scene.add(this.partyLight);
 		//this.scene.fog = new THREE.Fog( 0x000000, 1500, 3000 ) ;
 		
 		// SUN
+                
 		light = new THREE.SpotLight( 0xffffff, 1, 0, Math.PI, 1 );
-		light.position.set(-7500, 5000, 8000);
-		light.target.position.set( 0, 1000, 0 );
-		light.castShadow = true;
+		light.position.set(0, 2000, 0);
+		light.target.position.set( 0, 0, 0 );
+	/*	
+            light.castShadow = true;
 		light.shadowCameraNear = 700;
 		light.shadowCameraFar = this.camera.far;
 		light.shadowCameraFov = 50;
@@ -48,6 +50,7 @@ function dungeonRenderer($container) {
 		var SHADOW_MAP_WIDTH = 2048, SHADOW_MAP_HEIGHT = 1024;
 		light.shadowMapWidth = SHADOW_MAP_WIDTH;
 		light.shadowMapHeight = SHADOW_MAP_HEIGHT;
+            */
 		this.scene.add( light );
 		
 		this.sun2 = new THREE.SpotLight( 0xfff0f0, 1, 0, - Math.PI, 1 );
@@ -78,7 +81,7 @@ function dungeonRenderer($container) {
 		}
 		
 		/* HUD */
-		hud.addToScene(this.scene);
+		//hud.addToScene(this.scene);
 		
 		//this.animated = new animatedObject();
 		

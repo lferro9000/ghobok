@@ -1,3 +1,5 @@
+var _golden = 0.62;
+
 function ghobokHUD( params ) {
 
 	this.container = _coalesce(params.container,$("#hud"));
@@ -15,7 +17,8 @@ function ghobokHUD( params ) {
 			this.characterSlots[i].update();
 		}
 	}
-	
+	this.refresh = this.update;
+        
 	this.getDirectionName = function (direction) {
 		switch(direction) {
 			case DIRECTION_NORTH:
@@ -33,20 +36,22 @@ function ghobokHUD( params ) {
 		}
 	}
 
-	this.windowResized = function( width, height ) {		
-		this.container.css( {width:width+"px", height:height+"px"});
-		
-		this.scale = Math.round(width/26);		
-		var margin = Math.round(this.scale/7);
-		var chSlotHeightPX = (this.scale * _golden * 2) + (2 * margin);
-		var chSlotWidthPX = (this.scale * 4) + (2 * margin);
-		var topPX = height - chSlotHeightPX;
-		var leftPX;
-		for (var i = 0, max = this.characterSlots.length; i < max; i++) {			
-			leftPX = i * chSlotWidthPX;
-			this.characterSlots[i].container.css( { top:topPX+"px", left:leftPX+"px", width:chSlotWidthPX+"px", height:chSlotHeightPX+"px" } );
-			this.characterSlots[i].resize( this.scale, this.scale * _golden, margin );
-		}
+	this.windowResized = function( event ) {		
+            var width = event.x;
+            var height = event.y;
+            this.container.css( {width:width+"px", height:height+"px"});
+
+            this.scale = Math.round(width/26);		
+            var margin = Math.round(this.scale/7);
+            var chSlotHeightPX = (this.scale * _golden * 2) + (2 * margin);
+            var chSlotWidthPX = (this.scale * 4) + (2 * margin);
+            var topPX = height - chSlotHeightPX;
+            var leftPX;
+            for (var i = 0, max = this.characterSlots.length; i < max; i++) {			
+                    leftPX = i * chSlotWidthPX;
+                    this.characterSlots[i].container.css( { top:topPX+"px", left:leftPX+"px", width:chSlotWidthPX+"px", height:chSlotHeightPX+"px" } );
+                    this.characterSlots[i].resize( this.scale, this.scale * _golden, margin );
+            }
 	}
 	
 }

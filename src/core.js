@@ -37,9 +37,9 @@ function OnDocumentMouseDown( event ) {
 	mouse.mouseDown();
 }
 
-function OnWindowResize() {
+function OnWindowResize( event ) {
 	dr.WindowResize();
-	hud.windowResized();
+	hud.windowResized( event );
 }
 
 function OnKeyPress(e) {
@@ -66,7 +66,7 @@ $( function () {
 	$container.bind( 'mousemove', OnDocumentMouseMove );
 	$container.bind( 'mousedown', OnDocumentMouseDown );
 		
-	startLoadingMap(1);	
+	startLoadingMap(2);	
 			
 });
 

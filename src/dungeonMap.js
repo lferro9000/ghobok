@@ -48,7 +48,7 @@ function dungeonMap() {
 				this.animated_objects.push(map_object);
 			}
 		}
-		
+		/*
 		var monster;		
 		for (var i=0; i<map_json.monsters.length; i++) { 			
 			monster = new ghobokMonster();
@@ -62,7 +62,7 @@ function dungeonMap() {
 			this.map_monsters[map_monster.mapMonsterID] = map_monster;
 			this.animated_objects.push(map_monster);
 		}
-		
+		*/
 		var tile;
 		for (var i=0; i<map_json.tiles.length; i++) { 
 			tile = new dungeonTile(map_json.tiles[i]);

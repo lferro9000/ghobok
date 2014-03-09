@@ -1,8 +1,8 @@
-var ITEM_SLOT_WIDTH = 150;
-var ITEM_SLOT_HEIGHT = 200;
+var ITEM_SLOT_WIDTH = 50;
+var ITEM_SLOT_HEIGHT = 50;
 
 var ITEM_SLOT_MATERIAL = new THREE.MeshLambertMaterial({color:0xfaf5f0});        
-var ITEM_SLOT_GEOMETRY = new THREE.TorusGeometry(25, 5, 24, 50);
+var ITEM_SLOT_GEOMETRY = new THREE.TorusGeometry(ITEM_SLOT_WIDTH / 2, 5, 24, 50);
                 
 function itemSlot( params ) {
     
@@ -13,7 +13,9 @@ function itemSlot( params ) {
     this.item = null;
     
     this.mesh = new THREE.Mesh(ITEM_SLOT_GEOMETRY, ITEM_SLOT_MATERIAL);
-    this.mesh.position.set(this.x, this.y, 0);
+    this.mesh.position.x = this.x + (ITEM_SLOT_WIDTH / 2);
+    this.mesh.position.y = this.y + (ITEM_SLOT_HEIGHT / 2);
+    this.mesh.position.z = 25;
     
     if (this.scene) {
         this.scene.add(this.mesh);    
@@ -25,7 +27,9 @@ itemSlot.prototype.acceptItem = function ( item ) {
     this.item = item;
     if (this.item) {
         this.scene.add(this.item);
-        this.item.position.set(this.x, this.y, 0);
+        this.item.position.x = this.x + (ITEM_SLOT_WIDTH / 2);
+        this.item.position.y = this.y + (ITEM_SLOT_HEIGHT / 2);
+        this.item.position.z = 45;
     }
     return old_item;
 };

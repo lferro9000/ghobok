@@ -1,6 +1,12 @@
-var CHARACTER_SLOT_WIDTH = 350;
+var CHARACTER_SLOT_WIDTH = 250;
 var CHARACTER_SLOT_HEIGHT = 250;
 
+var CHARACTER_SLOT_LEAF_MATERIAL;
+
+var texture = THREE.ImageUtils.loadTexture( "../images/hud/leaf.png" );
+texture.flipY = false;
+CHARACTER_SLOT_LEAF_MATERIAL = new THREE.SpriteMaterial( { map: texture, opacity: 1, transparent:true } );
+                        
 function characterSlot( params ) {
     this.x = params.x;
     this.y = params.y;
@@ -10,15 +16,23 @@ function characterSlot( params ) {
     this.wrapper = new THREE.Object3D();
     this.wrapper.position.set(this.x, this.y, 0);
     
+    this.leaf = new THREE.Sprite( CHARACTER_SLOT_LEAF_MATERIAL );
+    this.leaf.scale.x = CHARACTER_SLOT_WIDTH;
+    this.leaf.scale.y = CHARACTER_SLOT_HEIGHT;
+    this.leaf.position.x = CHARACTER_SLOT_WIDTH / 2;
+    this.leaf.position.y = CHARACTER_SLOT_HEIGHT / 2;
+    this.leaf.position.z = 0;
+    this.wrapper.add( this.leaf );
+    
     var itemSlotParams = new Object();
     itemSlotParams.scene = this.wrapper;
     
-    itemSlotParams.x = 0;
-    itemSlotParams.y = 0;
+    itemSlotParams.x = 75;
+    itemSlotParams.y = 100;
     this.itemSlots.add( itemSlotParams );
     
-    itemSlotParams.x = ITEM_SLOT_WIDTH;
-    itemSlotParams.y = 0;
+    itemSlotParams.x = 95 + ITEM_SLOT_WIDTH;
+    itemSlotParams.y = 100;
     this.itemSlots.add( itemSlotParams );
     
     if (params.scene) {

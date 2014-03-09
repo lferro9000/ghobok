@@ -142,7 +142,7 @@ function dungeonRenderer($container) {
 		}
 		
 		this.renderer.render( this.scene, this.camera );
-	}
+	};
 	
 	this.WindowResize = function() {
 		this.WIDTH = window.innerWidth;
@@ -151,7 +151,7 @@ function dungeonRenderer($container) {
 		this.renderer.setSize( this.WIDTH, this.HEIGHT );
 		this.camera.aspect = this.ASPECT;
 		this.camera.updateProjectionMatrix();		
-	}
+	};
 	
 	this.WindowResize();
 	

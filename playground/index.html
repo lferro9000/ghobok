@@ -3,43 +3,22 @@
 	<head>
 		<meta charset="utf-8" />
 		<link href="style.css" rel="stylesheet"/>
-		<link href="../hud.css" rel="stylesheet"/>
-		<title>GHOBOK Playground</title>
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-	
+		<title>GHOBOK Playground - HUD</title>
 	</head>
 	
 	<body>
 		<div id="container"></div>
-		<div id="hud">
-			<div id="characterslot-template" class="characterslot">
-				<div class="character-portrait-wrapper slot">
-					<div class="character-portrait">
-						<div class="character-name"></div>
-					</div>					
-				</div>
-				<div class="left-hand slot"></div>
-				<div class="right-hand slot"></div>
-				<div class="slot-1 slot"></div>
-				<div class="slot-2 slot"></div>
-				<div class="slot-3 slot"></div>
-			</div>
-		</div>
 	</body>
 
-	<!-- LIB -->
+	<script src="../lib/jquery.min.js" language="javascript"></script>
+	<script src="../lib/three.js" language="javascript"></script>	
 	
-	<script src="/lib/jquery.min.js" language="javascript"></script>
-	<script src="/lib/three.js" language="javascript"></script>	
-	<script src="/lib/stats.min.js" language="javascript"></script>
-	<script src="/lib/FirstPersonControls.js" language="javascript"></script>
-	<script src="playground.js" language="javascript"></script>
+        <script src="../src/lib/tools.js" language="javascript"></script>
+        
+	<script src="../src/hud/itemSlot.js" language="javascript"></script>
+        <script src="../src/hud/characterSlot.js" language="javascript"></script>
+        <script src="../src/hud/hud.js" language="javascript"></script>
 	
-	<script src="../src/const.js" language="javascript"></script>
-	<script src="../src/hud.js" language="javascript"></script>
-	<script src="../src/dungeonTile.js" language="javascript"></script>
-	
-	<script src="/ghobok/lib/tools.js" language="javascript"></script>
-	<script src="/ghobok/lib/textSprites.js" language="javascript"></script>
+        <script src="playground.js" language="javascript"></script>
 
 </html>

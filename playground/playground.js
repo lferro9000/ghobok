@@ -1,39 +1,43 @@
 var MAX_ANISOTROPY;
 var WIDTH, HEIGHT, ASPECT, DELTA;
-var renderer, scene, camera, controls, clock, stats, light;
+var renderer, scene, camera, clock, light;
 
-var animated = [];
-
+var hud;
+        
 function animationFrame() {	
-	stats.begin();	
-	requestAnimationFrame(animationFrame);	
-	DELTA = clock.getDelta();	
-	controls.update(DELTA);	
-	for(var i = 0, max = animated.length; i < max; i ++ ) { 
-		animated[i].animationFrame( DELTA );
-	}	
-	renderer.render( scene, camera );	
-	stats.end();
+    requestAnimationFrame(animationFrame);	
+    DELTA = clock.getDelta();	
+   // renderer.clearDepth();
+    renderer.render( scene, camera );	
+    
+    
+    renderer.render( hud.scene, hud.camera );
 };
 	
 function OnWindowResize() {
-	WIDTH = window.innerWidth;
-	HEIGHT = window.innerHeight - 5;
-	ASPECT = WIDTH / HEIGHT;
-	renderer.setSize( WIDTH, HEIGHT );
-	hud.windowResized( WIDTH, HEIGHT )
-	camera.aspect = ASPECT;
-	camera.updateProjectionMatrix();	
-	controls.handleResize();
+    WIDTH = window.innerWidth;
+    HEIGHT = window.innerHeight - 5;
+    ASPECT = WIDTH / HEIGHT;
+    renderer.setSize( WIDTH, HEIGHT );
+    light.position.set(WIDTH / 2, HEIGHT / 2, 60);
+    camera.aspect = ASPECT;   
+    camera.updateProjectionMatrix();
+    
+    hud.OnWindowResize( WIDTH, HEIGHT );
 }
 
-function onDocumentMouseMove( event ) {
-/*
-	mouseX = event.clientX - windowHalfX;
-	mouseY = event.clientY - windowHalfY;
-	*/
+function OnMouseMove( event ) {
+    mouseX = event.clientX;
+    mouseY = event.clientY;    
+    hud.OnMouseMove( mouseX, mouseY );
 }
-			
+
+function OnMouseDown( event ) {
+    mouseX = event.clientX;
+    mouseY = event.clientY;    
+    hud.OnMouseDown( mouseX, mouseY );
+}
+
 function OnKeyPress(e) {
 	var key = e.keyCode ? e.keyCode : e.charCode;
 	
@@ -53,73 +57,49 @@ function OnKeyPress(e) {
 $( function () {
 
 	var $container = $('#container');	
-	renderer = new THREE.WebGLRenderer();
+	renderer = new THREE.WebGLRenderer({alpha:true});   
+        renderer.setClearColor(0xFF0000, 0);
+        renderer.autoClear = false;
 	MAX_ANISOTROPY = renderer.getMaxAnisotropy();
 	$container.append(renderer.domElement);
 	
 	window.addEventListener('resize', OnWindowResize, false);
 	document.addEventListener( 'keypress', OnKeyPress, false );
-	//document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-
+        $container.bind( 'mousemove', OnMouseMove );
+        $container.bind( 'mousedown', OnMouseDown );
+        
+        hud = new ghobokHUD();
+        
 	scene = new THREE.Scene();
-	camera = new THREE.PerspectiveCamera( 45, 1, 1, 100000 );
-	camera.position.set( 500, 500, 0 );
+        camera = new THREE.PerspectiveCamera( 40, 1, 1, -100, 10000 );
+	camera.position.set( 0, 0, 100 );
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
 	scene.add(camera);
 	
 	light = new THREE.PointLight(0xFFFFFF);
-	light.position.set( 0, 1000, 0 );
 	scene.add(light);
-	
-	light = new THREE.AmbientLight(0xf0f0f0);
-	scene.add(light);
-	
-	controls = new THREE.FirstPersonControls( camera, renderer.domElement, new THREE.Vector3(0,0,0) );
-	controls.movementSpeed = 3600;
-	controls.lookSpeed = 0.45;
-	/*
-	controls.constrainVertical = true;
-	controls.verticalMin = 1.1;
-	controls.verticalMax = 2.0;
-	*/
-	
-	hud = new ghobokHUD({});
-	
-	var kaya = {
-			name: "Kaya",
-			portrait:"../images/characters/gibri-woman.png",			
-		}
-	hud.addCharacterSlot( {character:kaya} );
-	var balim = {
-			name: "Balim",
-			portrait:"../images/characters/gibri-man.png",			
-		}
-	hud.addCharacterSlot( {character:balim} );
-	
-	var texture = THREE.ImageUtils.loadTexture( "../images/textures/bark2.jpg" );
-	var material = new THREE.MeshLambertMaterial( { color: 0xffffff, map: texture, side:THREE.DoubleSide } );		
-		
-	var tile = new dungeonTile( 
-		{ 	tile_id:1,
-			steps_south:0,
-			steps_east:3,
-			steps_up: 1,
-			direction: DIRECTION_WEST,
-			tile_type: TILE_TYPE_WALL, 
-			material_id:0
-		}
-	);
-	
-	tile.addToScene(scene, new THREE.PlaneGeometry( TILE_SIZE, TILE_SIZE ), [material] ); 
-	
-	/* stats */
-	stats = new Stats();
-	stats.setMode(0); // 0: fps, 1: ms
 
-	stats.domElement.style.position = 'absolute';
-	stats.domElement.style.left = '0px';
-	stats.domElement.style.top = '0px';
-	document.body.appendChild( stats.domElement );
-		
+	var loader = new THREE.JSONLoader();
+        loader.load('../models/items/flint.js', function(geometry, materials) {
+            flint = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+            flint.scale.set(10,10,10);
+            flint.position.set(0,0,50);
+            scene.add( flint );
+            hud.scene.add( flint );
+            hud.activeItem = flint;
+        });               
+        
+        var material = new THREE.MeshLambertMaterial({color:0xffffff});        
+        var ball = new THREE.SphereGeometry(5);
+        
+        for (var x = -10, maxX = 10; x <= maxX; x++) {
+            for (var y = -10, maxY = 10; y <= maxY; y++) {
+                mesh = new THREE.Mesh(ball, material);
+                mesh.position.set(x * 10, y * 10, x+y+25);            
+                scene.add(mesh);
+            }
+        }
+        
 	OnWindowResize();
 	clock = new THREE.Clock(true);
 	animationFrame();

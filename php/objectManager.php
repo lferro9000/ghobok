@@ -51,7 +51,7 @@
 		<title>Ghobok Object Manager</title>
 		<link href="editor.css" rel="stylesheet"/>
 		
-		<script src="src/lib/jquery.min.js"></script>
+		<script src="../lib/jquery.min.js"></script>
 		<script language="javascript">
 		
 			function onCategoryChange(catSel) {

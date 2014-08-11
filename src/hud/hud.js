@@ -9,6 +9,8 @@ function ghobokHUD ( params ) {
     this.scene.add( this.camera );
     this.light = new THREE.HemisphereLight(0xFFFFFF, 0x0A0A0A, 1);
     this.scene.add( this.light );
+    //this.light = new THREE.AmbientLight( 0xAFAFAF );
+    //this.scene.add( this.light );
 
     /* TEST SLOTS */
     var slotParams = new Object();

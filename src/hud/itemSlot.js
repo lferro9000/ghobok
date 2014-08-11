@@ -1,7 +1,7 @@
 var ITEM_SLOT_WIDTH = 50;
 var ITEM_SLOT_HEIGHT = 50;
 
-var ITEM_SLOT_MATERIAL = new THREE.MeshLambertMaterial({color:0xfaf5f0});        
+var ITEM_SLOT_MATERIAL = new THREE.MeshLambertMaterial({color:0x0aff0a, transparent:false, opacity:1});        
 var ITEM_SLOT_GEOMETRY = new THREE.TorusGeometry(ITEM_SLOT_WIDTH / 2, 5, 24, 50);
                 
 function itemSlot( params ) {

@@ -1,12 +1,14 @@
-var CHARACTER_SLOT_WIDTH = 250;
-var CHARACTER_SLOT_HEIGHT = 250;
+var CHARACTER_SLOT_WIDTH = 335;
+var CHARACTER_SLOT_HEIGHT = 226;
 
-var CHARACTER_SLOT_LEAF_MATERIAL;
+var CHARACTER_SLOT_LEAF_TEXTURE = THREE.ImageUtils.loadTexture( "../images/hud/leaf.png" );
+CHARACTER_SLOT_LEAF_TEXTURE.flipY = false;
+var CHARACTER_SLOT_LEAF_MATERIAL = new THREE.SpriteMaterial( { map: CHARACTER_SLOT_LEAF_TEXTURE, opacity: 1, transparent:false } );
 
-var texture = THREE.ImageUtils.loadTexture( "../images/hud/leaf.png" );
-texture.flipY = false;
-CHARACTER_SLOT_LEAF_MATERIAL = new THREE.SpriteMaterial( { map: texture, opacity: 1, transparent:true } );
-                        
+var GIBRI_TEXTURE = THREE.ImageUtils.loadTexture( "../images/characters/gibri-woman-port.png" );
+GIBRI_TEXTURE.flipY = false;
+var GIBRI_MATERIAL = new THREE.SpriteMaterial( { map: GIBRI_TEXTURE, opacity: 1, transparent:false } );
+
 function characterSlot( params ) {
     this.x = params.x;
     this.y = params.y;
@@ -24,15 +26,31 @@ function characterSlot( params ) {
     this.leaf.position.z = 0;
     this.wrapper.add( this.leaf );
     
+    this.portrait = new THREE.Sprite( GIBRI_MATERIAL );
+    this.portrait.scale.x = ITEM_SLOT_WIDTH;
+    this.portrait.scale.y = ITEM_SLOT_HEIGHT;
+    this.portrait.position.x = 80;
+    this.portrait.position.y = 50;
+    this.portrait.position.z = 1;
+    this.wrapper.add( this.portrait );
+    
     var itemSlotParams = new Object();
     itemSlotParams.scene = this.wrapper;
     
-    itemSlotParams.x = 75;
-    itemSlotParams.y = 100;
+    itemSlotParams.x = 105;
+    itemSlotParams.y = 50;
     this.itemSlots.add( itemSlotParams );
     
-    itemSlotParams.x = 95 + ITEM_SLOT_WIDTH;
-    itemSlotParams.y = 100;
+    itemSlotParams.x = 125 + ITEM_SLOT_WIDTH;
+    itemSlotParams.y = 50;
+    this.itemSlots.add( itemSlotParams );
+    
+    itemSlotParams.x = 105;
+    itemSlotParams.y = 70 + ITEM_SLOT_HEIGHT;
+    this.itemSlots.add( itemSlotParams );
+    
+    itemSlotParams.x = 125 + ITEM_SLOT_WIDTH;
+    itemSlotParams.y = 70 + ITEM_SLOT_HEIGHT;
     this.itemSlots.add( itemSlotParams );
     
     if (params.scene) {

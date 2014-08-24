@@ -22,6 +22,22 @@ function _append( arr1, arr2 ) {
 	} 
 }
 
+/*
+	Returns random integer number between a and b.
+*/
+function _random( a, b ) {
+	return a + Math.floor(Math.random() * (b - a));
+}
+
+/* 
+	Returns true if probability check for n% succeeds.
+	Example: _prob( 30 ) -- this will return true in 30% of cases.
+*/
+function _prob( n ) {
+	return (Math.random() <= (n/100));
+}
+
+
 function _dynamicSort(property) {
     var sortOrder = 1;
     if(property[0] === "-") {

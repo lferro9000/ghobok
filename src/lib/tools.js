@@ -49,3 +49,8 @@ function _dynamicSort(property) {
         return result * sortOrder;
     }
 }
+
+function _round( num, digits ) {
+	var x = Math.pow(10, _coalesce(digits, 2));
+	return Math.round(num * x) / x;
+}

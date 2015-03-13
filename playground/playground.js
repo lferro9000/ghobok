@@ -80,25 +80,35 @@ $( function () {
 	scene.add(light);
 
 	var loader = new THREE.JSONLoader();
-        loader.load('../models/items/flint.js', function(geometry, materials) {
-            flint = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
-            flint.scale.set(10,10,10);
-            flint.position.set(0,0,50);
-            scene.add( flint );
-            hud.scene.add( flint );
-            hud.activeItem = flint;
-        });               
-        
-        var material = new THREE.MeshLambertMaterial({color:0xffffff});        
-        var ball = new THREE.SphereGeometry(5);
-        
-        for (var x = -10, maxX = 10; x <= maxX; x++) {
-            for (var y = -10, maxY = 10; y <= maxY; y++) {
-                mesh = new THREE.Mesh(ball, material);
-                mesh.position.set(x * 10, y * 10, x+y+25);            
-                scene.add(mesh);
-            }
-        }
+	loader.load('../models/items/flint.js', function(geometry, materials) {
+		flint = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+		flint.scale.set(10,10,10);
+		flint.position.set(0,0,50);
+		scene.add( flint );
+		hud.scene.add( flint );
+		hud.activeItem = flint;
+	});               
+	
+	var loader2 = new THREE.JSONLoader();
+	loader2.load('../models/items/spear.js', function(geometry, materials) {
+		spear = new THREE.Mesh(geometry, new THREE.MeshFaceMaterial(materials));
+		spear.scale.set(10,10,10);
+		spear.position.set(0,0,50);
+		scene.add( spear );
+		hud.scene.add( spear );
+		hud.activeItem = spear;
+	});      
+	
+	var material = new THREE.MeshLambertMaterial({color:0xffffff});        
+	var ball = new THREE.SphereGeometry(5);
+	
+	for (var x = -10, maxX = 10; x <= maxX; x++) {
+		for (var y = -10, maxY = 10; y <= maxY; y++) {
+			mesh = new THREE.Mesh(ball, material);
+			mesh.position.set(x * 10, y * 10, x+y+25);            
+			scene.add(mesh);
+		}
+	}
         
 	OnWindowResize();
 	clock = new THREE.Clock(true);
